@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/">
+        <file>C:/msys64/home/cjp/cchess_qt/res/computer_32px.png</file>
+        <file>C:/msys64/home/cjp/cchess_qt/res/contacts_32px.png</file>
+        <file>C:/msys64/home/cjp/cchess_qt/res/help_32px.png</file>
+        <file>C:/msys64/home/cjp/cchess_qt/res/logout_rounded_down_32px.png</file>
+        <file>C:/msys64/home/cjp/cchess_qt/res/print_32px.png</file>
+        <file>C:/msys64/home/cjp/cchess_qt/res/reading_60px.ico</file>
+        <file>C:/msys64/home/cjp/cchess_qt/res/reading_60px.png</file>
+        <file>C:/msys64/home/cjp/cchess_qt/res/reading_100px.png</file>
+        <file>C:/msys64/home/cjp/cchess_qt/res/restore_down_32px.png</file>
+        <file>res/computer_32px.png</file>
+        <file>res/contacts_32px.png</file>
+        <file>res/help_32px.png</file>
+        <file>res/logout_rounded_down_32px.png</file>
+        <file>res/print_32px.png</file>
+        <file>res/reading_60px.png</file>
+        <file>res/reading_100px.png</file>
+        <file>res/restore_down_32px.png</file>
+    </qresource>
+</RCC>
