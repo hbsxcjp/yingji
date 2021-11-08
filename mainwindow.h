@@ -49,17 +49,20 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_companyCurrentRowChanged(const QModelIndex& current, const QModelIndex& previous);
-    void on_projectCurrentRowChanged(const QModelIndex& current, const QModelIndex& previous);
+    void on_comPushButton_clicked();
+    void on_proPushButton_clicked();
 
-    void on_projectLineEditChanged(const QString& text);
-    void on_employeeLineEditChanged(const QString& text);
+    void on_comSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+    void on_proSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+
+    void on_proLineEditChanged(const QString& text);
+    void on_empLineEditChanged(const QString& text);
 
 private:
     void createModelAndView();
-    void updateCompanyView();
-    void updateProjectView();
-    void updateEmployeeView();
+    void updateCompanyModel();
+    void updateProjectModel();
+    void updateEmployeeModel();
 
     void writeSettings();
     void readSettings();

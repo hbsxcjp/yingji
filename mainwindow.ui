@@ -98,27 +98,15 @@
          </spacer>
         </item>
         <item>
-         <widget class="QCheckBox" name="comAllCheckBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>65</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="contextMenuPolicy">
-           <enum>Qt::NoContextMenu</enum>
-          </property>
+         <widget class="QPushButton" name="comPushButton">
           <property name="layoutDirection">
            <enum>Qt::LeftToRight</enum>
           </property>
           <property name="text">
-           <string>全选</string>
+           <string>不选(全部)</string>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -163,7 +151,7 @@
          <number>10</number>
         </property>
         <property name="selectionMode">
-         <enum>QAbstractItemView::SingleSelection</enum>
+         <enum>QAbstractItemView::ExtendedSelection</enum>
         </property>
         <property name="selectionBehavior">
          <enum>QAbstractItemView::SelectRows</enum>
@@ -186,7 +174,7 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QWidget" name="layoutWidget">
+      <widget class="QWidget" name="">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QLabel" name="label_2">
@@ -254,27 +242,9 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="proAllCheckBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>65</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="contextMenuPolicy">
-             <enum>Qt::NoContextMenu</enum>
-            </property>
-            <property name="layoutDirection">
-             <enum>Qt::LeftToRight</enum>
-            </property>
+           <widget class="QPushButton" name="proPushButton">
             <property name="text">
-             <string>全选</string>
+             <string>不选(全部)</string>
             </property>
            </widget>
           </item>
@@ -316,7 +286,7 @@
            <number>10</number>
           </property>
           <property name="selectionMode">
-           <enum>QAbstractItemView::SingleSelection</enum>
+           <enum>QAbstractItemView::ExtendedSelection</enum>
           </property>
           <property name="selectionBehavior">
            <enum>QAbstractItemView::SelectRows</enum>
@@ -343,12 +313,12 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="layoutWidget">
+      <widget class="QWidget" name="">
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>小组人员(&amp;M)</string>
+           <string>小组人员(&amp;E)</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -434,6 +404,9 @@
           <property name="autoScrollMargin">
            <number>10</number>
           </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::ExtendedSelection</enum>
+          </property>
           <property name="selectionBehavior">
            <enum>QAbstractItemView::SelectRows</enum>
           </property>
@@ -466,7 +439,7 @@
      <x>0</x>
      <y>0</y>
      <width>1100</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_F">
@@ -479,7 +452,7 @@
    </widget>
    <widget class="QMenu" name="menu_E">
     <property name="title">
-     <string>编辑(&amp;E)</string>
+     <string>维护(&amp;M)</string>
     </property>
     <addaction name="action_CompanyEdit"/>
     <addaction name="action_ProjectEdit"/>
@@ -551,7 +524,7 @@
      <normaloff>:/res/computer_32px.png</normaloff>:/res/computer_32px.png</iconset>
    </property>
    <property name="text">
-    <string>公司维护(&amp;C)</string>
+    <string>公司(&amp;C)</string>
    </property>
    <property name="toolTip">
     <string>维护公司有关的信息</string>
@@ -566,7 +539,7 @@
      <normaloff>:/res/restore_down_32px.png</normaloff>:/res/restore_down_32px.png</iconset>
    </property>
    <property name="text">
-    <string>项目部维护(&amp;J)</string>
+    <string>项目部(&amp;J)</string>
    </property>
    <property name="toolTip">
     <string>维护项目部有关的信息</string>
@@ -581,7 +554,7 @@
      <normaloff>:/res/contacts_32px.png</normaloff>:/res/contacts_32px.png</iconset>
    </property>
    <property name="text">
-    <string>人员维护(&amp;E)</string>
+    <string>人员(&amp;E)</string>
    </property>
    <property name="toolTip">
     <string>维护人员有关的信息</string>
@@ -607,14 +580,14 @@
   </action>
  </widget>
  <tabstops>
+  <tabstop>comPushButton</tabstop>
   <tabstop>comTableView</tabstop>
-  <tabstop>comAllCheckBox</tabstop>
-  <tabstop>proTableView</tabstop>
   <tabstop>proLineEdit</tabstop>
-  <tabstop>proAllCheckBox</tabstop>
-  <tabstop>empTableView</tabstop>
+  <tabstop>proPushButton</tabstop>
+  <tabstop>proTableView</tabstop>
   <tabstop>empLineEdit</tabstop>
   <tabstop>telLineEdit</tabstop>
+  <tabstop>empTableView</tabstop>
  </tabstops>
  <resources>
   <include location="res.qrc"/>
@@ -627,8 +600,8 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
+     <x>118</x>
+     <y>107</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
