@@ -4,6 +4,7 @@
 #include <QItemSelectionModel>
 #include <QMainWindow>
 #include <QModelIndex>
+#include <QPair>
 #include <QSettings>
 #include <QSqlRecord>
 #include <QtSql/QSql>
@@ -49,20 +50,19 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_comPushButton_clicked();
-    void on_proPushButton_clicked();
+    void on_proLineEditChanged(const QString& text);
+    void on_empLineEditChanged(const QString& text);
 
     void on_comSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
     void on_proSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
-    void on_proLineEditChanged(const QString& text);
-    void on_empLineEditChanged(const QString& text);
-
 private:
     void createModelAndView();
-    void updateCompanyModel();
+    void updatecompanyModel();
     void updateProjectModel();
     void updateEmployeeModel();
+
+    QPair<int, int> getNums(const QSqlTableModel* tableModel, QItemSelectionModel* selectModel);
 
     void writeSettings();
     void readSettings();
@@ -71,8 +71,8 @@ private:
 
     QSqlDatabase DB;
     QSqlQuery sqlQuery;
-    QSqlQueryModel *comSqlModel, *proSqlModel;
-    QItemSelectionModel *comSelectModel, *proSelectModel;
+    QSqlTableModel *comTableModel, *proTableModel;
+    QItemSelectionModel *comSelectModel, *proSelectModel, *empSelectModel;
     QSqlRelationalTableModel* empRelTabModel;
 
     Ui::MainWindow* ui;

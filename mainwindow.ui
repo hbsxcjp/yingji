@@ -103,7 +103,7 @@
            <enum>Qt::LeftToRight</enum>
           </property>
           <property name="text">
-           <string>不选(全部)</string>
+           <string>全部</string>
           </property>
           <property name="flat">
            <bool>false</bool>
@@ -150,6 +150,9 @@
         <property name="autoScrollMargin">
          <number>10</number>
         </property>
+        <property name="tabKeyNavigation">
+         <bool>false</bool>
+        </property>
         <property name="selectionMode">
          <enum>QAbstractItemView::ExtendedSelection</enum>
         </property>
@@ -167,6 +170,24 @@
         </attribute>
        </widget>
       </item>
+      <item>
+       <widget class="QLabel" name="comLabel">
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
@@ -174,7 +195,7 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QLabel" name="label_2">
@@ -244,7 +265,7 @@
           <item>
            <widget class="QPushButton" name="proPushButton">
             <property name="text">
-             <string>不选(全部)</string>
+             <string>清除</string>
             </property>
            </widget>
           </item>
@@ -285,6 +306,9 @@
           <property name="autoScrollMargin">
            <number>10</number>
           </property>
+          <property name="tabKeyNavigation">
+           <bool>false</bool>
+          </property>
           <property name="selectionMode">
            <enum>QAbstractItemView::ExtendedSelection</enum>
           </property>
@@ -311,9 +335,21 @@
           </attribute>
          </widget>
         </item>
+        <item>
+         <widget class="QLabel" name="proLabel">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <widget class="QLabel" name="label_3">
@@ -404,6 +440,9 @@
           <property name="autoScrollMargin">
            <number>10</number>
           </property>
+          <property name="tabKeyNavigation">
+           <bool>false</bool>
+          </property>
           <property name="selectionMode">
            <enum>QAbstractItemView::ExtendedSelection</enum>
           </property>
@@ -425,6 +464,18 @@
           <attribute name="verticalHeaderDefaultSectionSize">
            <number>28</number>
           </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="empLabel">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </widget>
         </item>
        </layout>
@@ -600,8 +651,8 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>118</x>
-     <y>107</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
