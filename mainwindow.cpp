@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "companyedit.h"
+#include "projectedit.h"
 #include "ui_mainwindow.h"
-#include"projectedit.h"
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -250,8 +250,10 @@ void MainWindow::on_action_CompanyEdit_triggered()
 void MainWindow::on_action_ProjectEdit_triggered()
 {
     auto modelIndex = comItemSelectionModel->currentIndex();
-    if(!modelIndex.isValid())return;
-    int company_id =  modelIndex.row() ;
+    if (!modelIndex.isValid())
+        return;
+
+    int company_id = proTableModel->record(modelIndex.row()).value(Project_Company_Id).toInt();
     modelIndex = proItemSelectionModel->currentIndex();
     int id = modelIndex.isValid() ? modelIndex.row() : -1;
 

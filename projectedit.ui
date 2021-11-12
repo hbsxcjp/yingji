@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>项目部维护</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_3">
    <item>
@@ -49,7 +49,7 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>100</width>
+           <width>80</width>
            <height>16777215</height>
           </size>
          </property>
@@ -93,25 +93,28 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>100</width>
+           <width>80</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="text">
           <string>项目部名称：</string>
          </property>
-         <property name="buddy">
-          <cstring>nameLineEdit</cstring>
-         </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="nameLineEdit">
-         <property name="font">
-          <font>
-           <family>等线</family>
-           <pointsize>10</pointsize>
-          </font>
+        <widget class="QTextEdit" name="nameLineEdit">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>50</height>
+          </size>
          </property>
         </widget>
        </item>

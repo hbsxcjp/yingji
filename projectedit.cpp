@@ -37,9 +37,9 @@ ProjectEdit::ProjectEdit(int company_id,int id,QWidget *parent) :
     connect(ui->lastButton, SIGNAL(clicked()),
         mapper, SLOT(toLast()));
     connect(ui->addButton, SIGNAL(clicked()),
-        this, SLOT(addCompany()));
+        this, SLOT(addProject()));
     connect(ui->deleteButton, SIGNAL(clicked()),
-        this, SLOT(deleteCompany()));
+        this, SLOT(deleteProject()));
     connect(ui->closeButton, SIGNAL(clicked()),
         this, SLOT(accept()));
 }
