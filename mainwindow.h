@@ -26,6 +26,8 @@ private slots:
 
     void on_action_CompanyEdit_triggered();
 
+    void on_action_ProjectEdit_triggered();
+
 private:
     void createModelAndView();
     void updatecompanyModel();

@@ -1,22 +1,29 @@
 #ifndef PROJECTEDIT_H
 #define PROJECTEDIT_H
 
-#include <QDialog>
+#include "common.h"
 
 namespace Ui {
-class projectEdit;
+class ProjectEdit;
 }
 
-class projectEdit : public QDialog
+class ProjectEdit : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit projectEdit(QWidget *parent = nullptr);
-    ~projectEdit();
+    explicit ProjectEdit(int company_id,int id, QWidget *parent = nullptr);
+    ~ProjectEdit();
+
+private slots:
+    void addProject();
+    void deleteProject();
 
 private:
-    Ui::projectEdit *ui;
+    QSqlTableModel* tableModel;
+    QDataWidgetMapper* mapper;
+
+    Ui::ProjectEdit *ui;
 };
 
 #endif // PROJECTEDIT_H

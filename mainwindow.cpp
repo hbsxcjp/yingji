@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "companyedit.h"
 #include "ui_mainwindow.h"
+#include"projectedit.h"
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -244,4 +245,16 @@ void MainWindow::on_action_CompanyEdit_triggered()
     int id = modelIndex.isValid() ? modelIndex.row() : -1;
     CompanyEdit* companyEdit = new CompanyEdit(id);
     companyEdit->show();
+}
+
+void MainWindow::on_action_ProjectEdit_triggered()
+{
+    auto modelIndex = comItemSelectionModel->currentIndex();
+    if(!modelIndex.isValid())return;
+    int company_id =  modelIndex.row() ;
+    modelIndex = proItemSelectionModel->currentIndex();
+    int id = modelIndex.isValid() ? modelIndex.row() : -1;
+
+    ProjectEdit* projectEdit = new ProjectEdit(company_id, id);
+    projectEdit->show();
 }
