@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     companyedit.cpp \
+    editdialog.cpp \
     main.cpp \
     mainwindow.cpp \
     projectedit.cpp
@@ -24,11 +25,13 @@ SOURCES += \
 HEADERS += \
     common.h \
     companyedit.h \
+    editdialog.h \
     mainwindow.h \
     projectedit.h
 
 FORMS += \
     companyedit.ui \
+    editdialog.ui \
     mainwindow.ui \
     projectedit.ui
 

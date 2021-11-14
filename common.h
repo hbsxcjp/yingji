@@ -6,6 +6,7 @@
 #include <QFileInfo>
 #include <QItemSelectionModel>
 #include <QMainWindow>
+#include <QMap>
 #include <QMessageBox>
 #include <QModelIndex>
 #include <QPair>

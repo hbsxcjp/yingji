@@ -10,6 +10,11 @@
     <height>400</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>等线</family>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>项目部维护</string>
   </property>
@@ -62,7 +67,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comComboBox"/>
+        <widget class="QComboBox" name="comComboBox">
+         <property name="font">
+          <font>
+           <family>等线</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -115,6 +127,15 @@
            <width>16777215</width>
            <height>50</height>
           </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>等线</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="tabChangesFocus">
+          <bool>true</bool>
          </property>
         </widget>
        </item>

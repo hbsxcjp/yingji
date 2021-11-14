@@ -7,12 +7,11 @@ namespace Ui {
 class ProjectEdit;
 }
 
-class ProjectEdit : public QDialog
-{
+class ProjectEdit : public QDialog {
     Q_OBJECT
 
 public:
-    explicit ProjectEdit(int company_id,int id, QWidget *parent = nullptr);
+    explicit ProjectEdit(int company_id, int id, QWidget* parent = nullptr);
     ~ProjectEdit();
 
 private slots:
@@ -20,10 +19,11 @@ private slots:
     void deleteProject();
 
 private:
-    QSqlTableModel* tableModel;
+    QSqlRelationalTableModel* tableModel;
     QDataWidgetMapper* mapper;
+    int initCompany_id;
 
-    Ui::ProjectEdit *ui;
+    Ui::ProjectEdit* ui;
 };
 
 #endif // PROJECTEDIT_H

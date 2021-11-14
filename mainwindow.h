@@ -17,22 +17,29 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_proLineEditChanged(const QString& text);
-    void on_empLineEditChanged(const QString& text);
 
-    void on_comSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
-    void on_proSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
-    void on_empSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+    void on_comItemSelModel_selectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+    void on_proItemSelModel_selectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+    void on_empItemSelModel_selectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
     void on_action_CompanyEdit_triggered();
-
     void on_action_ProjectEdit_triggered();
+    void on_action_EmployeeEdit_triggered();
+    void on_action_About_triggered();
+
+    void on_proLineEdit_textChanged(const QString& arg1);
+    void on_empLineEdit_textChanged(const QString& arg1);
+    void on_telLineEdit_textChanged(const QString& arg1);
 
 private:
     void createModelAndView();
     void updatecompanyModel();
     void updateProjectModel();
     void updateEmployeeModel();
+
+    QString getSelectionFilter(const QSqlTableModel* tableModel,
+        const QItemSelectionModel* itemSelectionModel, bool listAll);
+    QString getKeysFilter(const QString& text, const QString& regStr, const QString& fieldName);
 
     void writeSettings();
     void readSettings();
@@ -42,8 +49,8 @@ private:
     QSqlDatabase DB;
     QSqlQuery sqlQuery;
     QSqlTableModel *comTableModel, *proTableModel;
-    QSqlRelationalTableModel* empRelationTableModel;
-    QItemSelectionModel *comItemSelectionModel, *proItemSelectionModel, *empItemSelectionModel;
+    QSqlRelationalTableModel* empRelTableModel;
+    QItemSelectionModel *comItemSelModel, *proItemSelModel, *empItemSelModel;
 
     Ui::MainWindow* ui;
 };

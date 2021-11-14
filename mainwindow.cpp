@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "companyedit.h"
+#include "editdialog.h"
 #include "projectedit.h"
 #include "ui_mainwindow.h"
 
@@ -11,7 +12,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     createModelAndView();
     updatecompanyModel();
-    on_comSelectionChanged(QItemSelection(), QItemSelection());
+    on_comItemSelModel_selectionChanged(QItemSelection(), QItemSelection());
 
     readSettings();
 }
@@ -22,50 +23,98 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_proLineEditChanged(const QString& text)
-{
-    Q_UNUSED(text);
-
-    on_comSelectionChanged(QItemSelection(), QItemSelection());
-}
-
-void MainWindow::on_empLineEditChanged(const QString& text)
-{
-    Q_UNUSED(text);
-
-    on_proSelectionChanged(QItemSelection(), QItemSelection());
-}
-
-void MainWindow::on_comSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
+void MainWindow::on_comItemSelModel_selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
 
     updateProjectModel();
-    ui->comLabel->setText(QString("公司选择 %1 个").arg(comItemSelectionModel->selectedRows().count()));
-    on_proSelectionChanged(QItemSelection(), QItemSelection());
+    ui->comLabel->setText(QString("选择 %1 个").arg(comItemSelModel->selectedRows().count()));
+    on_proItemSelModel_selectionChanged(QItemSelection(), QItemSelection());
 }
 
-void MainWindow::on_proSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
+void MainWindow::on_proItemSelModel_selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
 
     updateEmployeeModel();
-    ui->proLabel->setText(QString("项目部(机关)共 %1 个，选择 %2 个")
+    ui->proLabel->setText(QString("共 %1 个，选择 %2 个")
                               .arg(proTableModel->rowCount())
-                              .arg(proItemSelectionModel->selectedRows().count()));
-    on_empSelectionChanged(QItemSelection(), QItemSelection());
+                              .arg(proItemSelModel->selectedRows().count()));
+    on_empItemSelModel_selectionChanged(QItemSelection(), QItemSelection());
 }
 
-void MainWindow::on_empSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
+void MainWindow::on_empItemSelModel_selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
 
-    ui->empLabel->setText(QString("人员共 %1 名，选择 %2 名")
-                              .arg(empRelationTableModel->rowCount())
-                              .arg(empItemSelectionModel->selectedRows().count()));
+    ui->empLabel->setText(QString("共 %1 名，选择 %2 名")
+                              .arg(empRelTableModel->rowCount())
+                              .arg(empItemSelModel->selectedRows().count()));
+}
+
+void MainWindow::on_action_CompanyEdit_triggered()
+{
+    auto modelIndex = comItemSelModel->currentIndex();
+    int id = -1;
+    if (modelIndex.isValid())
+        id = comTableModel->record(modelIndex.row()).value(Simple_Id).toInt();
+
+    CompanyEdit* companyEdit = new CompanyEdit(id);
+    companyEdit->exec();
+
+    comTableModel->select();
+}
+
+void MainWindow::on_action_ProjectEdit_triggered()
+{
+    auto modelIndex = comItemSelModel->currentIndex();
+    if (!modelIndex.isValid())
+        return;
+
+    int company_id = proTableModel->record(modelIndex.row()).value(Project_Company_Id).toInt();
+    modelIndex = proItemSelModel->currentIndex();
+    int id = -1;
+    if (modelIndex.isValid())
+        id = proTableModel->record(modelIndex.row()).value(Project_Id).toInt();
+
+    ProjectEdit* projectEdit = new ProjectEdit(company_id, id);
+    projectEdit->exec();
+}
+
+void MainWindow::on_action_EmployeeEdit_triggered()
+{
+    EditDialog* editDialog = new EditDialog;
+    editDialog->show();
+}
+
+void MainWindow::on_action_About_triggered()
+{
+    QMessageBox::about(this, "关于本应用",
+        QString("内部使用的分包应急组织体系通讯录.\n\n经营管理部\n2021.11.18"));
+}
+
+void MainWindow::on_proLineEdit_textChanged(const QString& arg1)
+{
+    Q_UNUSED(arg1);
+
+    on_comItemSelModel_selectionChanged(QItemSelection(), QItemSelection());
+}
+
+void MainWindow::on_empLineEdit_textChanged(const QString& arg1)
+{
+    Q_UNUSED(arg1);
+
+    on_proItemSelModel_selectionChanged(QItemSelection(), QItemSelection());
+}
+
+void MainWindow::on_telLineEdit_textChanged(const QString& arg1)
+{
+    Q_UNUSED(arg1);
+
+    on_proItemSelModel_selectionChanged(QItemSelection(), QItemSelection());
 }
 
 void MainWindow::createModelAndView()
@@ -80,136 +129,121 @@ void MainWindow::createModelAndView()
 
     // 公司模型和视图
     comTableModel = new QSqlTableModel(this);
-    comItemSelectionModel = new QItemSelectionModel(comTableModel);
+    comItemSelModel = new QItemSelectionModel(comTableModel);
     comTableModel->setTable("company");
     comTableModel->setHeaderData(Simple_Name, Qt::Horizontal, "公司名称");
     ui->comTableView->setModel(comTableModel);
-    ui->comTableView->setSelectionModel(comItemSelectionModel);
+    ui->comTableView->setSelectionModel(comItemSelModel);
+    ui->comTableView->hideColumn(Simple_Id);
     connect(ui->comPushButton, SIGNAL(clicked()),
-        comItemSelectionModel, SLOT(clearSelection()));
-    connect(comItemSelectionModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-        this, SLOT(on_comSelectionChanged(const QItemSelection&, const QItemSelection&)));
+        comItemSelModel, SLOT(clearSelection()));
+    connect(comItemSelModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+        this, SLOT(on_comItemSelModel_selectionChanged(const QItemSelection&, const QItemSelection&)));
 
     // 项目部模型和视图
     proTableModel = new QSqlTableModel(this);
-    proItemSelectionModel = new QItemSelectionModel(proTableModel);
+    proItemSelModel = new QItemSelectionModel(proTableModel);
     proTableModel->setTable("project");
     proTableModel->setHeaderData(Project_Name, Qt::Horizontal, "项目部(机关)名称");
     ui->proTableView->setModel(proTableModel);
-    ui->proTableView->setSelectionModel(proItemSelectionModel);
+    ui->proTableView->setSelectionModel(proItemSelModel);
+    ui->proTableView->hideColumn(Project_Id);
+    ui->proTableView->hideColumn(Project_Company_Id);
+    ui->proTableView->hideColumn(Project_Sort_Id);
     connect(ui->proPushButton, SIGNAL(clicked()),
         ui->proLineEdit, SLOT(clear()));
     connect(ui->proPushButton, SIGNAL(clicked()),
-        proItemSelectionModel, SLOT(clearSelection()));
-    connect(ui->proLineEdit, SIGNAL(textChanged(const QString&)),
-        this, SLOT(on_proLineEditChanged(const QString&)));
-    connect(proItemSelectionModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-        this, SLOT(on_proSelectionChanged(const QItemSelection&, const QItemSelection&)));
+        proItemSelModel, SLOT(clearSelection()));
+    connect(proItemSelModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+        this, SLOT(on_proItemSelModel_selectionChanged(const QItemSelection&, const QItemSelection&)));
 
     // 人员模型和视图
-    empRelationTableModel = new QSqlRelationalTableModel(this);
-    empItemSelectionModel = new QItemSelectionModel(empRelationTableModel);
-    empRelationTableModel->setTable("employee");
-    empRelationTableModel->setRelation(Employee_Role_Id, QSqlRelation("role", "id", "name"));
-    empRelationTableModel->setHeaderData(Employee_Role_Id, Qt::Horizontal, "角色");
-    empRelationTableModel->setHeaderData(Employee_Name, Qt::Horizontal, "姓名");
-    empRelationTableModel->setHeaderData(Employee_Depart_Position, Qt::Horizontal, "部门/职务");
-    empRelationTableModel->setHeaderData(Employee_Telephone, Qt::Horizontal, "电话");
-    ui->empTableView->setModel(empRelationTableModel);
-    ui->empTableView->setSelectionModel(empItemSelectionModel);
+    empRelTableModel = new QSqlRelationalTableModel(this);
+    empItemSelModel = new QItemSelectionModel(empRelTableModel);
+    empRelTableModel->setTable("employee");
+    empRelTableModel->setRelation(Employee_Role_Id, QSqlRelation("role", "id", "name"));
+    empRelTableModel->setHeaderData(Employee_Role_Id, Qt::Horizontal, "角色");
+    empRelTableModel->setHeaderData(Employee_Name, Qt::Horizontal, "姓名");
+    empRelTableModel->setHeaderData(Employee_Depart_Position, Qt::Horizontal, "部门/职务");
+    empRelTableModel->setHeaderData(Employee_Telephone, Qt::Horizontal, "电话");
+    ui->empTableView->setModel(empRelTableModel);
+    ui->empTableView->setSelectionModel(empItemSelModel);
     ui->empTableView->setItemDelegate(new QSqlRelationalDelegate(this));
+    ui->empTableView->hideColumn(Employee_Id);
+    ui->empTableView->hideColumn(Employee_Project_Id);
 
-    connect(ui->empLineEdit, SIGNAL(textChanged(const QString&)),
-        this, SLOT(on_empLineEditChanged(const QString&)));
-    connect(ui->telLineEdit, SIGNAL(textChanged(const QString&)),
-        this, SLOT(on_empLineEditChanged(const QString&)));
-    connect(empItemSelectionModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-        this, SLOT(on_empSelectionChanged(const QItemSelection&, const QItemSelection&)));
+    connect(empItemSelModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+        this, SLOT(on_empItemSelModel_selectionChanged(const QItemSelection&, const QItemSelection&)));
 }
 
 void MainWindow::updatecompanyModel()
 {
     comTableModel->select();
-    ui->comTableView->hideColumn(Simple_Id);
 }
 
 void MainWindow::updateProjectModel()
 {
     // 项目部模型和视图更新
-    QString sql;
-    auto indexList = comItemSelectionModel->selectedRows(Simple_Name);
-    if (!indexList.isEmpty()) {
-        QString temp;
-        for (auto& index : indexList) {
-            auto record = comTableModel->record(index.row());
-            temp.append(QString("%1,").arg(record.value(Simple_Id).toInt()));
-        }
-        temp.remove(temp.size() - 1, 1);
-        sql.append(QString("company_id IN (%1) ").arg(temp));
-    }
-    QString filterStr = ui->proLineEdit->text();
-    QStringList filterStrList = filterStr.split(QRegExp("\\W+"), QString::SkipEmptyParts);
-    if (!filterStrList.isEmpty()) {
-        if (!sql.isEmpty())
-            sql.append("AND ");
-        sql.append(QString("name LIKE '\%%1\%' ").arg(filterStrList.join('\%')));
-    }
+    QString sql { getSelectionFilter(comTableModel, comItemSelModel, false)
+        + getKeysFilter(ui->proLineEdit->text(), "\\W+", "name") };
+    printf((sql + '\n').toUtf8());
+
     proTableModel->setFilter(sql);
     proTableModel->setSort(Project_Sort_Id, Qt::SortOrder::AscendingOrder);
     proTableModel->select();
-
-    ui->proTableView->hideColumn(Project_Id);
-    ui->proTableView->hideColumn(Project_Company_Id);
-    ui->proTableView->hideColumn(Project_Sort_Id);
 }
 
 void MainWindow::updateEmployeeModel()
 {
     // 人员模型和视图更新
+    QString sql { getSelectionFilter(proTableModel, proItemSelModel, true)
+        + getKeysFilter(ui->empLineEdit->text(), "\\W+", "empName")
+        + getKeysFilter(ui->telLineEdit->text(), "\\D+", "telephone") };
+    printf((sql + '\n').toUtf8());
+
+    empRelTableModel->setFilter(sql);
+    empRelTableModel->setSort(Employee_Id, Qt::SortOrder::AscendingOrder);
+    empRelTableModel->select();
+    ui->empTableView->resizeColumnsToContents();
+}
+
+QString MainWindow::getSelectionFilter(const QSqlTableModel* tableModel,
+    const QItemSelectionModel* itemSelectionModel, bool listAll)
+{
+    QString sql { QString("%1_id ").arg(tableModel->tableName()) };
     QList<int> rows;
-    auto indexList = proItemSelectionModel->selectedRows(Project_Name);
+    auto indexList = itemSelectionModel->selectedRows(tableModel->fieldIndex("name"));
     if (!indexList.isEmpty()) {
         for (auto& index : indexList)
             rows.append(index.row());
-    } else {
-        int count = proTableModel->rowCount();
-        for (int i = 0; i < count; ++i)
-            rows.append(i);
-    }
-    QString temp;
-    for (auto& row : rows) {
-        auto record = proTableModel->record(row);
-        temp.append(QString("%1,").arg(record.value(Simple_Id).toInt()));
-    }
-    temp.remove(temp.size() - 1, 1);
-    QString sql { QString("project_id IN (%1) ").arg(temp) };
+    } else if (listAll)
+        for (int row = 0; row < tableModel->rowCount(); ++row)
+            rows.append(row);
 
-    auto filterStr = ui->empLineEdit->text();
-    auto filterStrList = filterStr.split(QRegExp("\\W+"), QString::SkipEmptyParts);
-    if (!filterStrList.isEmpty()) {
-        if (!sql.isEmpty())
-            sql.append("AND ");
-        sql.append(QString("empName LIKE '\%%1\%' ").arg(filterStrList.join('\%')));
-    }
-    filterStr = ui->telLineEdit->text();
-    filterStrList = filterStr.split(QRegExp("\\D+"), QString::SkipEmptyParts);
-    if (!filterStrList.isEmpty()) {
-        if (!sql.isEmpty())
-            sql.append("AND ");
-        sql.append(QString("telephone LIKE '\%%1\%' ").arg(filterStrList.join('\%')));
-    }
-    empRelationTableModel->setFilter(sql);
-    empRelationTableModel->setSort(Employee_Id, Qt::SortOrder::AscendingOrder);
-    empRelationTableModel->select();
+    if (rows.count() > 0) {
+        sql.append("IN (");
+        for (int row : rows)
+            sql.append(QString("%1,").arg(tableModel->record(row).value("id").toInt()));
+        sql.remove(sql.size() - 1, 1).append(") ");
+    } else
+        sql.append("> 0 ");
 
-    ui->empTableView->hideColumn(Employee_Id);
-    ui->empTableView->hideColumn(Employee_Project_Id);
-    ui->empTableView->resizeColumnsToContents();
+    return sql;
+}
+
+QString MainWindow::getKeysFilter(const QString& text, const QString& regStr, const QString& fieldName)
+{
+    QString sql;
+    auto filterStrList = text.split(QRegExp(regStr), QString::SkipEmptyParts);
+    if (!filterStrList.isEmpty())
+        sql.append(QString("AND %1 LIKE '\%%2\%' ").arg(fieldName).arg(filterStrList.join('\%')));
+
+    return sql;
 }
 
 void MainWindow::writeSettings()
 {
-    QSettings settings("陈建平.", "工作小组通讯录");
+    QSettings settings("sdbj", "yingji");
 
     settings.beginGroup("mainWindow");
     settings.setValue("geometry", saveGeometry());
@@ -226,7 +260,7 @@ void MainWindow::writeSettings()
 
 void MainWindow::readSettings()
 {
-    QSettings settings("陈建平.", "工作小组通讯录");
+    QSettings settings("sdbj", "yingji");
 
     settings.beginGroup("mainWindow");
     restoreGeometry(settings.value("geometry").toByteArray());
@@ -237,26 +271,4 @@ void MainWindow::readSettings()
     //    comSelectModel->select(, QItemSelectionModel::ToggleCurrent);
 
     settings.endGroup();
-}
-
-void MainWindow::on_action_CompanyEdit_triggered()
-{
-    auto modelIndex = comItemSelectionModel->currentIndex();
-    int id = modelIndex.isValid() ? modelIndex.row() : -1;
-    CompanyEdit* companyEdit = new CompanyEdit(id);
-    companyEdit->show();
-}
-
-void MainWindow::on_action_ProjectEdit_triggered()
-{
-    auto modelIndex = comItemSelectionModel->currentIndex();
-    if (!modelIndex.isValid())
-        return;
-
-    int company_id = proTableModel->record(modelIndex.row()).value(Project_Company_Id).toInt();
-    modelIndex = proItemSelectionModel->currentIndex();
-    int id = modelIndex.isValid() ? modelIndex.row() : -1;
-
-    ProjectEdit* projectEdit = new ProjectEdit(company_id, id);
-    projectEdit->show();
 }

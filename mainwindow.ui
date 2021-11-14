@@ -135,7 +135,7 @@
         <property name="font">
          <font>
           <family>等线</family>
-          <pointsize>10</pointsize>
+          <pointsize>9</pointsize>
          </font>
         </property>
         <property name="focusPolicy">
@@ -148,7 +148,7 @@
          <enum>QFrame::WinPanel</enum>
         </property>
         <property name="autoScrollMargin">
-         <number>10</number>
+         <number>6</number>
         </property>
         <property name="editTriggers">
          <set>QAbstractItemView::NoEditTriggers</set>
@@ -156,11 +156,17 @@
         <property name="tabKeyNavigation">
          <bool>false</bool>
         </property>
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
         <property name="selectionMode">
          <enum>QAbstractItemView::ExtendedSelection</enum>
         </property>
         <property name="selectionBehavior">
          <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <property name="sortingEnabled">
+         <bool>true</bool>
         </property>
         <attribute name="horizontalHeaderCascadingSectionResizes">
          <bool>false</bool>
@@ -189,7 +195,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>10</pointsize>
+          <pointsize>9</pointsize>
          </font>
         </property>
         <property name="text">
@@ -263,6 +269,11 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="font">
+             <font>
+              <pointsize>9</pointsize>
+             </font>
+            </property>
             <property name="contextMenuPolicy">
              <enum>Qt::NoContextMenu</enum>
             </property>
@@ -286,7 +297,7 @@
           <item>
            <widget class="QPushButton" name="proPushButton">
             <property name="text">
-             <string>清除</string>
+             <string>全部</string>
             </property>
            </widget>
           </item>
@@ -315,7 +326,7 @@
           <property name="font">
            <font>
             <family>等线</family>
-            <pointsize>10</pointsize>
+            <pointsize>9</pointsize>
            </font>
           </property>
           <property name="focusPolicy">
@@ -325,7 +336,7 @@
            <enum>QFrame::WinPanel</enum>
           </property>
           <property name="autoScrollMargin">
-           <number>10</number>
+           <number>6</number>
           </property>
           <property name="editTriggers">
            <set>QAbstractItemView::NoEditTriggers</set>
@@ -333,11 +344,17 @@
           <property name="tabKeyNavigation">
            <bool>false</bool>
           </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
           <property name="selectionMode">
            <enum>QAbstractItemView::ExtendedSelection</enum>
           </property>
           <property name="selectionBehavior">
            <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
           </property>
           <attribute name="horizontalHeaderCascadingSectionResizes">
            <bool>false</bool>
@@ -349,7 +366,7 @@
            <number>320</number>
           </attribute>
           <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
-           <bool>false</bool>
+           <bool>true</bool>
           </attribute>
           <attribute name="horizontalHeaderStretchLastSection">
            <bool>true</bool>
@@ -358,7 +375,7 @@
            <number>24</number>
           </attribute>
           <attribute name="verticalHeaderDefaultSectionSize">
-           <number>29</number>
+           <number>30</number>
           </attribute>
          </widget>
         </item>
@@ -366,7 +383,7 @@
          <widget class="QLabel" name="proLabel">
           <property name="font">
            <font>
-            <pointsize>10</pointsize>
+            <pointsize>9</pointsize>
            </font>
           </property>
           <property name="text">
@@ -408,6 +425,11 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="font">
+             <font>
+              <pointsize>9</pointsize>
+             </font>
+            </property>
             <property name="contextMenuPolicy">
              <enum>Qt::NoContextMenu</enum>
             </property>
@@ -434,8 +456,16 @@
           </item>
           <item>
            <widget class="QLineEdit" name="telLineEdit">
+            <property name="font">
+             <font>
+              <pointsize>9</pointsize>
+             </font>
+            </property>
             <property name="contextMenuPolicy">
              <enum>Qt::NoContextMenu</enum>
+            </property>
+            <property name="toolTipDuration">
+             <number>-1</number>
             </property>
            </widget>
           </item>
@@ -458,14 +488,17 @@
           <property name="font">
            <font>
             <family>等线</family>
-            <pointsize>10</pointsize>
+            <pointsize>9</pointsize>
            </font>
+          </property>
+          <property name="inputMethodHints">
+           <set>Qt::ImhNone</set>
           </property>
           <property name="frameShape">
            <enum>QFrame::WinPanel</enum>
           </property>
           <property name="autoScrollMargin">
-           <number>10</number>
+           <number>6</number>
           </property>
           <property name="editTriggers">
            <set>QAbstractItemView::NoEditTriggers</set>
@@ -473,11 +506,20 @@
           <property name="tabKeyNavigation">
            <bool>false</bool>
           </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
           <property name="selectionMode">
            <enum>QAbstractItemView::ExtendedSelection</enum>
           </property>
           <property name="selectionBehavior">
            <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
           </property>
           <attribute name="horizontalHeaderCascadingSectionResizes">
            <bool>false</bool>
@@ -503,7 +545,7 @@
          <widget class="QLabel" name="empLabel">
           <property name="font">
            <font>
-            <pointsize>10</pointsize>
+            <pointsize>9</pointsize>
            </font>
           </property>
           <property name="text">
@@ -523,7 +565,7 @@
      <x>0</x>
      <y>0</y>
      <width>1100</width>
-     <height>22</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_F">
@@ -553,7 +595,6 @@
    <addaction name="menu_E"/>
    <addaction name="menu_H"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>
@@ -629,7 +670,7 @@
     <string>维护项目部有关的信息</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+J</string>
+    <string>Ctrl+Shift+P</string>
    </property>
   </action>
   <action name="action_EmployeeEdit">
