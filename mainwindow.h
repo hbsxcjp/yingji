@@ -18,25 +18,29 @@ public:
 
 private slots:
 
-    void on_comItemSelModel_selectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
-    void on_proItemSelModel_selectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
-    void on_empItemSelModel_selectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+    void on_comItemSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+    void on_proItemSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+    void on_empItemSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
-    void on_action_CompanyEdit_triggered();
-    void on_action_ProjectEdit_triggered();
-    void on_action_EmployeeEdit_triggered();
-    void on_action_About_triggered();
+    void on_actionCompanyEdit_triggered();
+    void on_actionProjectEdit_triggered();
+    void on_actionEmployeeEdit_triggered();
+    void on_actionAbout_triggered();
 
     void on_proLineEdit_textChanged(const QString& arg1);
     void on_empLineEdit_textChanged(const QString& arg1);
     void on_telLineEdit_textChanged(const QString& arg1);
 
 private:
-    void createModelAndView();
-    void updatecompanyModel();
+    void showEditDialog(int index);
+
+    void createModelViews();
+    void updateCompanyModel();
     void updateProjectModel();
     void updateEmployeeModel();
 
+    int getSelectionId(const QSqlTableModel* tableModel,
+        const QItemSelectionModel* itemSelectionModel);
     QString getSelectionFilter(const QSqlTableModel* tableModel,
         const QItemSelectionModel* itemSelectionModel, bool listAll);
     QString getKeysFilter(const QString& text, const QString& regStr, const QString& fieldName);

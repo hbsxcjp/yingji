@@ -572,24 +572,24 @@
     <property name="title">
      <string>文件(&amp;F)</string>
     </property>
-    <addaction name="action_Print"/>
+    <addaction name="actionPrint"/>
     <addaction name="separator"/>
-    <addaction name="action_Quit"/>
+    <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menu_E">
     <property name="title">
      <string>维护(&amp;M)</string>
     </property>
-    <addaction name="action_CompanyEdit"/>
-    <addaction name="action_ProjectEdit"/>
+    <addaction name="actionCompanyEdit"/>
+    <addaction name="actionProjectEdit"/>
     <addaction name="separator"/>
-    <addaction name="action_EmployeeEdit"/>
+    <addaction name="actionEmployeeEdit"/>
    </widget>
    <widget class="QMenu" name="menu_H">
     <property name="title">
      <string>帮助(&amp;H)</string>
     </property>
-    <addaction name="action_About"/>
+    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menu_F"/>
    <addaction name="menu_E"/>
@@ -605,15 +605,15 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="action_Print"/>
+   <addaction name="actionPrint"/>
    <addaction name="separator"/>
-   <addaction name="action_CompanyEdit"/>
-   <addaction name="action_ProjectEdit"/>
-   <addaction name="action_EmployeeEdit"/>
+   <addaction name="actionCompanyEdit"/>
+   <addaction name="actionProjectEdit"/>
+   <addaction name="actionEmployeeEdit"/>
    <addaction name="separator"/>
-   <addaction name="action_About"/>
+   <addaction name="actionAbout"/>
   </widget>
-  <action name="action_Print">
+  <action name="actionPrint">
    <property name="icon">
     <iconset resource="res.qrc">
      <normaloff>:/res/print_32px.png</normaloff>:/res/print_32px.png</iconset>
@@ -628,7 +628,7 @@
     <string>Ctrl+P</string>
    </property>
   </action>
-  <action name="action_Quit">
+  <action name="actionQuit">
    <property name="icon">
     <iconset resource="res.qrc">
      <normaloff>:/res/logout_rounded_down_32px.png</normaloff>:/res/logout_rounded_down_32px.png</iconset>
@@ -643,7 +643,7 @@
     <string>Ctrl+Q</string>
    </property>
   </action>
-  <action name="action_CompanyEdit">
+  <action name="actionCompanyEdit">
    <property name="icon">
     <iconset resource="res.qrc">
      <normaloff>:/res/computer_32px.png</normaloff>:/res/computer_32px.png</iconset>
@@ -658,7 +658,7 @@
     <string>Ctrl+Shift+C</string>
    </property>
   </action>
-  <action name="action_ProjectEdit">
+  <action name="actionProjectEdit">
    <property name="icon">
     <iconset resource="res.qrc">
      <normaloff>:/res/restore_down_32px.png</normaloff>:/res/restore_down_32px.png</iconset>
@@ -673,7 +673,7 @@
     <string>Ctrl+Shift+P</string>
    </property>
   </action>
-  <action name="action_EmployeeEdit">
+  <action name="actionEmployeeEdit">
    <property name="icon">
     <iconset resource="res.qrc">
      <normaloff>:/res/contacts_32px.png</normaloff>:/res/contacts_32px.png</iconset>
@@ -688,7 +688,7 @@
     <string>Ctrl+Shift+E</string>
    </property>
   </action>
-  <action name="action_About">
+  <action name="actionAbout">
    <property name="icon">
     <iconset resource="res.qrc">
      <normaloff>:/res/help_32px.png</normaloff>:/res/help_32px.png</iconset>
@@ -719,7 +719,7 @@
  </resources>
  <connections>
   <connection>
-   <sender>action_Quit</sender>
+   <sender>actionQuit</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>close()</slot>

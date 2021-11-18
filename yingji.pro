@@ -16,24 +16,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    companyedit.cpp \
     editdialog.cpp \
     main.cpp \
-    mainwindow.cpp \
-    projectedit.cpp
+    mainwindow.cpp
 
 HEADERS += \
     common.h \
-    companyedit.h \
     editdialog.h \
-    mainwindow.h \
-    projectedit.h
+    mainwindow.h
 
 FORMS += \
-    companyedit.ui \
     editdialog.ui \
-    mainwindow.ui \
-    projectedit.ui
+    mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

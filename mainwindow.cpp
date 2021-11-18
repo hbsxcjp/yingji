@@ -10,9 +10,9 @@ MainWindow::MainWindow(QWidget* parent)
 {
     ui->setupUi(this);
 
-    createModelAndView();
-    updatecompanyModel();
-    on_comItemSelModel_selectionChanged(QItemSelection(), QItemSelection());
+    createModelViews();
+    updateCompanyModel();
+    on_comItemSelectionChanged(QItemSelection(), QItemSelection());
 
     readSettings();
 }
@@ -23,17 +23,17 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_comItemSelModel_selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
+void MainWindow::on_comItemSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
 
     updateProjectModel();
     ui->comLabel->setText(QString("选择 %1 个").arg(comItemSelModel->selectedRows().count()));
-    on_proItemSelModel_selectionChanged(QItemSelection(), QItemSelection());
+    on_proItemSelectionChanged(QItemSelection(), QItemSelection());
 }
 
-void MainWindow::on_proItemSelModel_selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
+void MainWindow::on_proItemSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
@@ -42,10 +42,10 @@ void MainWindow::on_proItemSelModel_selectionChanged(const QItemSelection& selec
     ui->proLabel->setText(QString("共 %1 个，选择 %2 个")
                               .arg(proTableModel->rowCount())
                               .arg(proItemSelModel->selectedRows().count()));
-    on_empItemSelModel_selectionChanged(QItemSelection(), QItemSelection());
+    on_empItemSelectionChanged(QItemSelection(), QItemSelection());
 }
 
-void MainWindow::on_empItemSelModel_selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
+void MainWindow::on_empItemSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
@@ -55,42 +55,22 @@ void MainWindow::on_empItemSelModel_selectionChanged(const QItemSelection& selec
                               .arg(empItemSelModel->selectedRows().count()));
 }
 
-void MainWindow::on_action_CompanyEdit_triggered()
+void MainWindow::on_actionCompanyEdit_triggered()
 {
-    auto modelIndex = comItemSelModel->currentIndex();
-    int id = -1;
-    if (modelIndex.isValid())
-        id = comTableModel->record(modelIndex.row()).value(Simple_Id).toInt();
-
-    CompanyEdit* companyEdit = new CompanyEdit(id);
-    companyEdit->exec();
-
-    comTableModel->select();
+    showEditDialog(TabIndex_Company);
 }
 
-void MainWindow::on_action_ProjectEdit_triggered()
+void MainWindow::on_actionProjectEdit_triggered()
 {
-    auto modelIndex = comItemSelModel->currentIndex();
-    if (!modelIndex.isValid())
-        return;
-
-    int company_id = proTableModel->record(modelIndex.row()).value(Project_Company_Id).toInt();
-    modelIndex = proItemSelModel->currentIndex();
-    int id = -1;
-    if (modelIndex.isValid())
-        id = proTableModel->record(modelIndex.row()).value(Project_Id).toInt();
-
-    ProjectEdit* projectEdit = new ProjectEdit(company_id, id);
-    projectEdit->exec();
+    showEditDialog(TabIndex_Project);
 }
 
-void MainWindow::on_action_EmployeeEdit_triggered()
+void MainWindow::on_actionEmployeeEdit_triggered()
 {
-    EditDialog* editDialog = new EditDialog;
-    editDialog->show();
+    showEditDialog(TabIndex_Employee);
 }
 
-void MainWindow::on_action_About_triggered()
+void MainWindow::on_actionAbout_triggered()
 {
     QMessageBox::about(this, "关于本应用",
         QString("内部使用的分包应急组织体系通讯录.\n\n经营管理部\n2021.11.18"));
@@ -100,24 +80,34 @@ void MainWindow::on_proLineEdit_textChanged(const QString& arg1)
 {
     Q_UNUSED(arg1);
 
-    on_comItemSelModel_selectionChanged(QItemSelection(), QItemSelection());
+    on_comItemSelectionChanged(QItemSelection(), QItemSelection());
 }
 
 void MainWindow::on_empLineEdit_textChanged(const QString& arg1)
 {
     Q_UNUSED(arg1);
 
-    on_proItemSelModel_selectionChanged(QItemSelection(), QItemSelection());
+    on_proItemSelectionChanged(QItemSelection(), QItemSelection());
 }
 
 void MainWindow::on_telLineEdit_textChanged(const QString& arg1)
 {
     Q_UNUSED(arg1);
 
-    on_proItemSelModel_selectionChanged(QItemSelection(), QItemSelection());
+    on_proItemSelectionChanged(QItemSelection(), QItemSelection());
 }
 
-void MainWindow::createModelAndView()
+void MainWindow::showEditDialog(int index)
+{
+
+    EditDialog* editDialog = new EditDialog(index,
+        getSelectionId(comTableModel, comItemSelModel),
+        getSelectionId(proTableModel, proItemSelModel),
+        getSelectionId(empRelTableModel, empItemSelModel));
+    editDialog->exec();
+}
+
+void MainWindow::createModelViews()
 {
     QString dbname { "data.db" };
     DB = QSqlDatabase::addDatabase("QSQLITE");
@@ -138,7 +128,7 @@ void MainWindow::createModelAndView()
     connect(ui->comPushButton, SIGNAL(clicked()),
         comItemSelModel, SLOT(clearSelection()));
     connect(comItemSelModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-        this, SLOT(on_comItemSelModel_selectionChanged(const QItemSelection&, const QItemSelection&)));
+        this, SLOT(on_comItemSelectionChanged(const QItemSelection&, const QItemSelection&)));
 
     // 项目部模型和视图
     proTableModel = new QSqlTableModel(this);
@@ -155,7 +145,7 @@ void MainWindow::createModelAndView()
     connect(ui->proPushButton, SIGNAL(clicked()),
         proItemSelModel, SLOT(clearSelection()));
     connect(proItemSelModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-        this, SLOT(on_proItemSelModel_selectionChanged(const QItemSelection&, const QItemSelection&)));
+        this, SLOT(on_proItemSelectionChanged(const QItemSelection&, const QItemSelection&)));
 
     // 人员模型和视图
     empRelTableModel = new QSqlRelationalTableModel(this);
@@ -173,10 +163,10 @@ void MainWindow::createModelAndView()
     ui->empTableView->hideColumn(Employee_Project_Id);
 
     connect(empItemSelModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-        this, SLOT(on_empItemSelModel_selectionChanged(const QItemSelection&, const QItemSelection&)));
+        this, SLOT(on_empItemSelectionChanged(const QItemSelection&, const QItemSelection&)));
 }
 
-void MainWindow::updatecompanyModel()
+void MainWindow::updateCompanyModel()
 {
     comTableModel->select();
 }
@@ -186,7 +176,7 @@ void MainWindow::updateProjectModel()
     // 项目部模型和视图更新
     QString sql { getSelectionFilter(comTableModel, comItemSelModel, false)
         + getKeysFilter(ui->proLineEdit->text(), "\\W+", "name") };
-    printf((sql + '\n').toUtf8());
+    //    printf((sql + '\n').toUtf8());
 
     proTableModel->setFilter(sql);
     proTableModel->setSort(Project_Sort_Id, Qt::SortOrder::AscendingOrder);
@@ -199,12 +189,20 @@ void MainWindow::updateEmployeeModel()
     QString sql { getSelectionFilter(proTableModel, proItemSelModel, true)
         + getKeysFilter(ui->empLineEdit->text(), "\\W+", "empName")
         + getKeysFilter(ui->telLineEdit->text(), "\\D+", "telephone") };
-    printf((sql + '\n').toUtf8());
+    //    printf((sql + '\n').toUtf8());
 
     empRelTableModel->setFilter(sql);
     empRelTableModel->setSort(Employee_Id, Qt::SortOrder::AscendingOrder);
     empRelTableModel->select();
     ui->empTableView->resizeColumnsToContents();
+}
+
+int MainWindow::getSelectionId(const QSqlTableModel* tableModel,
+    const QItemSelectionModel* itemSelectionModel)
+{
+    auto indexList = itemSelectionModel->selectedRows(tableModel->fieldIndex("name"));
+    int row = indexList.isEmpty() ? 0 : indexList[0].row();
+    return tableModel->record(row).value(Simple_Id).toInt();
 }
 
 QString MainWindow::getSelectionFilter(const QSqlTableModel* tableModel,

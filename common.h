@@ -41,4 +41,10 @@ enum {
     Employee_Telephone
 };
 
+enum {
+    TabIndex_Company,
+    TabIndex_Project,
+    TabIndex_Employee
+};
+
 #endif // COMMON_H
