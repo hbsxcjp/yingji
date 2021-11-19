@@ -21,7 +21,7 @@ EditDialog::EditDialog(int index, int company_id, int project_id, int employee_i
     connect(ui->lastToolButton, SIGNAL(clicked()),
         mapper, SLOT(toLast()));
     connect(mapper, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(setCurrentIndex(int)));
+        this, SLOT(on_mapper_currentChanged(int)));
 
     connect(ui->addToolButton, SIGNAL(clicked()),
         this, SLOT(addRecord()));
@@ -32,7 +32,7 @@ EditDialog::EditDialog(int index, int company_id, int project_id, int employee_i
     proId = project_id;
     empId = employee_id;
     ui->tabWidget->setCurrentIndex(index);
-    on_tabWidget_currentChanged(index);
+    //    on_tabWidget_currentChanged(index);
     //    ui->indexLineEdit->setInputMask("DDD");
 }
 
@@ -52,18 +52,21 @@ void EditDialog::addRecord()
         break;
     case TabIndex_Project:
         relTableModel->setData(relTableModel->index(row, Project_Company_Id), comId);
+        relTableModel->setData(relTableModel->index(row, Project_Sort_Id),
+            10000 + relTableModel->record(row).value(Simple_Id).toInt());
         ui->proLineEdit->setFocus();
         break;
     case TabIndex_Employee:
         relTableModel->setData(relTableModel->index(row, Employee_Project_Id), proId);
+        relTableModel->setData(relTableModel->index(row, Employee_Role_Id), 1);
         ui->empNameLineEdit->setFocus();
         break;
     default:
         ui->roleLineEdit->setFocus();
         break;
     }
-
     mapper->setCurrentIndex(row);
+    mapper->submit();
 }
 
 void EditDialog::deleteRecord()
@@ -86,11 +89,10 @@ void EditDialog::deleteRecord()
     mapper->setCurrentIndex(qMin(row, relTableModel->rowCount() - 1));
 }
 
-void EditDialog::setCurrentIndex(int index)
+void EditDialog::on_mapper_currentChanged(int index)
 {
-    mapper->submit();
     auto value = relTableModel->record(mapper->currentIndex()).value(Simple_Id);
-    int id = value.isValid() ? value.toInt() : 0;
+    int id = value.isValid() ? value.toInt() : -1;
     switch (ui->tabWidget->currentIndex()) {
     case TabIndex_Company:
         comId = id;
@@ -107,17 +109,12 @@ void EditDialog::setCurrentIndex(int index)
     default:
         break;
     }
-    if (!value.isValid())
-        addRecord();
-
-    int count = relTableModel->rowCount();
-    ui->indexLineEdit->setValidator(new QIntValidator(1, count, this));
-    ui->indexLineEdit->setText(QString::number(index + 1));
-    ui->indexLabel->setText(QString("/ %1").arg(count));
+    setMapperIndex(index);
 }
 
 void EditDialog::on_tabWidget_currentChanged(int index)
 {
+    relTableModel->clear();
     mapper->clearMapping();
     switch (index) {
     case TabIndex_Company:
@@ -133,6 +130,7 @@ void EditDialog::on_tabWidget_currentChanged(int index)
         setRoleTab();
         break;
     }
+    setMapperIndex(mapper->currentIndex());
 }
 
 void EditDialog::on_indexLineEdit_editingFinished()
@@ -227,9 +225,19 @@ void EditDialog::delRole(int row)
     QSqlDatabase::database().commit(); // 提交事务
 }
 
+void EditDialog::setMapperIndex(int index)
+{
+    int count = relTableModel->rowCount();
+    if (count == 0)
+        index = -1;
+
+    ui->indexLineEdit->setValidator(new QIntValidator(1, count, this));
+    ui->indexLineEdit->setText(QString::number(index + 1));
+    ui->indexLabel->setText(QString("/ %1").arg(count));
+}
+
 void EditDialog::setCompanyTab()
 {
-    relTableModel->clear();
     relTableModel->setTable("company");
     relTableModel->setSort(Simple_Id, Qt::SortOrder::AscendingOrder);
     relTableModel->select();
@@ -247,39 +255,35 @@ void EditDialog::setCompanyTab()
         }
     } else
         mapper->toFirst();
-    //    ui->comLineEdit->setFocus();
 }
 
 void EditDialog::setProjectTab()
 {
-    relTableModel->clear();
     relTableModel->setTable("project");
     relTableModel->setFilter(QString("company_id = %1").arg(comId));
     relTableModel->setSort(Project_Sort_Id, Qt::SortOrder::AscendingOrder);
     relTableModel->select();
-
-    QSqlQuery sqlQuery(QString("SELECT * FROM company WHERE id = %1").arg(comId));
-    if (sqlQuery.first())
-        ui->comLineEdit_p->setText(sqlQuery.value(Simple_Name).toString());
 
     mapper->setModel(relTableModel);
     mapper->addMapping(ui->proLineEdit, Project_Name);
     if (proId > 0) {
         for (int row = 0; row < relTableModel->rowCount(); ++row) {
             QSqlRecord record = relTableModel->record(row);
-            if (record.value(Simple_Id).toInt() == proId) {
+            if (record.value(Project_Id).toInt() == proId) {
                 mapper->setCurrentIndex(row);
                 break;
             }
         }
     } else
         mapper->toFirst();
-    //    ui->proLineEdit->setFocus();
+
+    sqlQuery.exec(QString("SELECT * FROM company WHERE id = %1").arg(comId));
+    if (sqlQuery.first())
+        ui->comLineEdit_p->setText(sqlQuery.value(Simple_Name).toString());
 }
 
 void EditDialog::setEmployeeTab()
 {
-    relTableModel->clear();
     relTableModel->setTable("employee");
     relTableModel->setRelation(Employee_Role_Id, QSqlRelation("role", "id", "name"));
     relTableModel->setFilter(QString("project_id = %1").arg(proId));
@@ -298,7 +302,7 @@ void EditDialog::setEmployeeTab()
     if (empId > 0) {
         for (int row = 0; row < relTableModel->rowCount(); ++row) {
             QSqlRecord record = relTableModel->record(row);
-            if (record.value(Simple_Id).toInt() == empId) {
+            if (record.value(Employee_Id).toInt() == empId) {
                 mapper->setCurrentIndex(row);
                 break;
             }
@@ -306,7 +310,7 @@ void EditDialog::setEmployeeTab()
     } else
         mapper->toFirst();
 
-    QSqlQuery sqlQuery(QString("SELECT * FROM project WHERE id = %1").arg(proId));
+    sqlQuery.exec(QString("SELECT * FROM project WHERE id = %1").arg(proId));
     if (sqlQuery.first()) {
         ui->proLineEdit_e->setText(sqlQuery.value(Project_Name).toString());
         comId = sqlQuery.value(Project_Company_Id).toInt();
@@ -314,12 +318,10 @@ void EditDialog::setEmployeeTab()
         if (sqlQuery.first())
             ui->comLineEdit_e->setText(sqlQuery.value(Simple_Name).toString());
     }
-    //    ui->empNameLineEdit->setFocus();
 }
 
 void EditDialog::setRoleTab()
 {
-    relTableModel->clear();
     relTableModel->setTable("role");
     relTableModel->setSort(Simple_Id, Qt::SortOrder::AscendingOrder);
     relTableModel->select();
@@ -327,5 +329,4 @@ void EditDialog::setRoleTab()
     mapper->setModel(relTableModel);
     mapper->addMapping(ui->roleLineEdit, Simple_Name);
     mapper->toFirst();
-    //    ui->roleLineEdit->setFocus();
 }

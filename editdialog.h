@@ -18,8 +18,8 @@ public:
 private slots:
     void addRecord();
     void deleteRecord();
-    void setCurrentIndex(int index);
 
+    void on_mapper_currentChanged(int index);
     void on_tabWidget_currentChanged(int index);
     void on_indexLineEdit_editingFinished();
     void on_indexLineEdit_textEdited(const QString& text);
@@ -30,11 +30,13 @@ private:
     void delEmployee(int row);
     void delRole(int row);
 
+    void setMapperIndex(int index);
     void setCompanyTab();
     void setProjectTab();
     void setEmployeeTab();
     void setRoleTab();
 
+    QSqlQuery sqlQuery;
     QSqlRelationalTableModel* relTableModel;
     QSqlTableModel* tableModel_role;
     QDataWidgetMapper* mapper;
