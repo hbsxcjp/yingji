@@ -1,7 +1,51 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "common.h"
+//#include <QDataWidgetMapper>
+#include <QDialog>
+#include <QFileInfo>
+#include <QItemSelectionModel>
+#include <QMainWindow>
+#include <QMap>
+#include <QMessageBox>
+#include <QModelIndex>
+#include <QPair>
+#include <QSettings>
+#include <QSqlRecord>
+#include <QtSql/QSql>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlError>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlQueryModel>
+#include <QtSql/QSqlRelationalDelegate>
+#include <QtSql/QSqlRelationalTableModel>
+
+enum {
+    Simple_Id,
+    Simple_Name
+};
+
+enum {
+    Project_Id,
+    Project_Company_Id,
+    Project_Name,
+    Project_Sort_Id
+};
+
+enum {
+    Employee_Id,
+    Employee_Project_Id,
+    Employee_Role_Id,
+    Employee_Name,
+    Employee_Depart_Position,
+    Employee_Telephone
+};
+
+enum {
+    TabIndex_Company,
+    TabIndex_Project,
+    TabIndex_Employee
+};
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,18 +66,20 @@ private slots:
     void on_proItemSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
     void on_empItemSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
-    void on_actionCompanyEdit_triggered();
-    void on_actionProjectEdit_triggered();
-    void on_actionEmployeeEdit_triggered();
     void on_actionAbout_triggered();
 
     void on_proLineEdit_textChanged(const QString& arg1);
     void on_empLineEdit_textChanged(const QString& arg1);
     void on_telLineEdit_textChanged(const QString& arg1);
 
-private:
-    void showEditDialog(int index);
+    void on_delComButton_clicked();
+    void on_addComButton_clicked();
+    void on_delProButton_clicked();
+    void on_addProButton_clicked();
+    void on_delEmpButton_clicked();
+    void on_addEmpButton_clicked();
 
+private:
     void createModelViews();
     void updateCompanyModel();
     void updateProjectModel();
@@ -47,8 +93,6 @@ private:
 
     void writeSettings();
     void readSettings();
-
-    QString comStateStr, proStateStr, empStateStr;
 
     QSqlDatabase DB;
     QSqlQuery sqlQuery;

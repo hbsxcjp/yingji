@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1100</width>
+    <width>991</width>
     <height>600</height>
    </rect>
   </property>
@@ -54,7 +54,7 @@
    <property name="contextMenuPolicy">
     <enum>Qt::NoContextMenu</enum>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_4">
+   <layout class="QHBoxLayout" name="horizontalLayout_7">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -67,7 +67,7 @@
         </property>
         <property name="maximumSize">
          <size>
-          <width>150</width>
+          <width>16777215</width>
           <height>16777215</height>
          </size>
         </property>
@@ -99,6 +99,12 @@
         </item>
         <item>
          <widget class="QPushButton" name="comPushButton">
+          <property name="maximumSize">
+           <size>
+            <width>80</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="layoutDirection">
            <enum>Qt::LeftToRight</enum>
           </property>
@@ -115,20 +121,20 @@
       <item>
        <widget class="QTableView" name="comTableView">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+         <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="minimumSize">
          <size>
-          <width>150</width>
+          <width>180</width>
           <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>150</width>
+          <width>350</width>
           <height>16777204</height>
          </size>
         </property>
@@ -151,7 +157,7 @@
          <number>6</number>
         </property>
         <property name="editTriggers">
-         <set>QAbstractItemView::NoEditTriggers</set>
+         <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
         </property>
         <property name="tabKeyNavigation">
          <bool>false</bool>
@@ -186,36 +192,57 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="comLabel">
-        <property name="maximumSize">
-         <size>
-          <width>150</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>9</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QLabel" name="comLabel">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="delComButton">
+          <property name="maximumSize">
+           <size>
+            <width>50</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string> - </string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="addComButton">
+          <property name="maximumSize">
+           <size>
+            <width>50</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string> + </string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
     <item>
      <widget class="QSplitter" name="splitter">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="contextMenuPolicy">
-       <enum>Qt::NoContextMenu</enum>
-      </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -296,6 +323,12 @@
           </item>
           <item>
            <widget class="QPushButton" name="proPushButton">
+            <property name="maximumSize">
+             <size>
+              <width>80</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string>全部</string>
             </property>
@@ -319,7 +352,7 @@
           </property>
           <property name="maximumSize">
            <size>
-            <width>16777215</width>
+            <width>450</width>
             <height>16777215</height>
            </size>
           </property>
@@ -339,7 +372,7 @@
            <number>6</number>
           </property>
           <property name="editTriggers">
-           <set>QAbstractItemView::NoEditTriggers</set>
+           <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
           </property>
           <property name="tabKeyNavigation">
            <bool>false</bool>
@@ -380,16 +413,46 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="proLabel">
-          <property name="font">
-           <font>
-            <pointsize>9</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <widget class="QLabel" name="proLabel">
+            <property name="font">
+             <font>
+              <pointsize>9</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="delProButton">
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string> - </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="addProButton">
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string> + </string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -501,7 +564,7 @@
            <number>6</number>
           </property>
           <property name="editTriggers">
-           <set>QAbstractItemView::NoEditTriggers</set>
+           <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
           </property>
           <property name="tabKeyNavigation">
            <bool>false</bool>
@@ -542,16 +605,46 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="empLabel">
-          <property name="font">
-           <font>
-            <pointsize>9</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <widget class="QLabel" name="empLabel">
+            <property name="font">
+             <font>
+              <pointsize>9</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="delEmpButton">
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string> - </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="addEmpButton">
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string> + </string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -564,7 +657,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1100</width>
+     <width>991</width>
      <height>25</height>
     </rect>
    </property>
@@ -572,18 +665,8 @@
     <property name="title">
      <string>文件(&amp;F)</string>
     </property>
-    <addaction name="actionPrint"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
-   </widget>
-   <widget class="QMenu" name="menu_E">
-    <property name="title">
-     <string>维护(&amp;M)</string>
-    </property>
-    <addaction name="actionCompanyEdit"/>
-    <addaction name="actionProjectEdit"/>
-    <addaction name="separator"/>
-    <addaction name="actionEmployeeEdit"/>
    </widget>
    <widget class="QMenu" name="menu_H">
     <property name="title">
@@ -592,7 +675,6 @@
     <addaction name="actionAbout"/>
    </widget>
    <addaction name="menu_F"/>
-   <addaction name="menu_E"/>
    <addaction name="menu_H"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
@@ -605,29 +687,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionPrint"/>
-   <addaction name="separator"/>
-   <addaction name="actionCompanyEdit"/>
-   <addaction name="actionProjectEdit"/>
-   <addaction name="actionEmployeeEdit"/>
-   <addaction name="separator"/>
-   <addaction name="actionAbout"/>
   </widget>
-  <action name="actionPrint">
-   <property name="icon">
-    <iconset resource="res.qrc">
-     <normaloff>:/res/print_32px.png</normaloff>:/res/print_32px.png</iconset>
-   </property>
-   <property name="text">
-    <string>打印(&amp;P)</string>
-   </property>
-   <property name="toolTip">
-    <string>打印当前选择的小组通讯录</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+P</string>
-   </property>
-  </action>
   <action name="actionQuit">
    <property name="icon">
     <iconset resource="res.qrc">
@@ -641,51 +701,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
-   </property>
-  </action>
-  <action name="actionCompanyEdit">
-   <property name="icon">
-    <iconset resource="res.qrc">
-     <normaloff>:/res/computer_32px.png</normaloff>:/res/computer_32px.png</iconset>
-   </property>
-   <property name="text">
-    <string>公司(&amp;C)</string>
-   </property>
-   <property name="toolTip">
-    <string>维护公司有关的信息</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+C</string>
-   </property>
-  </action>
-  <action name="actionProjectEdit">
-   <property name="icon">
-    <iconset resource="res.qrc">
-     <normaloff>:/res/restore_down_32px.png</normaloff>:/res/restore_down_32px.png</iconset>
-   </property>
-   <property name="text">
-    <string>项目部(&amp;J)</string>
-   </property>
-   <property name="toolTip">
-    <string>维护项目部有关的信息</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+P</string>
-   </property>
-  </action>
-  <action name="actionEmployeeEdit">
-   <property name="icon">
-    <iconset resource="res.qrc">
-     <normaloff>:/res/contacts_32px.png</normaloff>:/res/contacts_32px.png</iconset>
-   </property>
-   <property name="text">
-    <string>人员(&amp;E)</string>
-   </property>
-   <property name="toolTip">
-    <string>维护人员有关的信息</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+E</string>
    </property>
   </action>
   <action name="actionAbout">

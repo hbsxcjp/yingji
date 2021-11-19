@@ -1,7 +1,4 @@
 #include "mainwindow.h"
-#include "companyedit.h"
-#include "editdialog.h"
-#include "projectedit.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget* parent)
@@ -55,21 +52,6 @@ void MainWindow::on_empItemSelectionChanged(const QItemSelection& selected, cons
                               .arg(empItemSelModel->selectedRows().count()));
 }
 
-void MainWindow::on_actionCompanyEdit_triggered()
-{
-    showEditDialog(TabIndex_Company);
-}
-
-void MainWindow::on_actionProjectEdit_triggered()
-{
-    showEditDialog(TabIndex_Project);
-}
-
-void MainWindow::on_actionEmployeeEdit_triggered()
-{
-    showEditDialog(TabIndex_Employee);
-}
-
 void MainWindow::on_actionAbout_triggered()
 {
     QMessageBox::about(this, "关于本应用",
@@ -95,16 +77,6 @@ void MainWindow::on_telLineEdit_textChanged(const QString& arg1)
     Q_UNUSED(arg1);
 
     on_proItemSelectionChanged(QItemSelection(), QItemSelection());
-}
-
-void MainWindow::showEditDialog(int index)
-{
-
-    EditDialog* editDialog = new EditDialog(index,
-        getSelectionId(comTableModel, comItemSelModel),
-        getSelectionId(proTableModel, proItemSelModel),
-        getSelectionId(empRelTableModel, empItemSelModel));
-    editDialog->exec();
 }
 
 void MainWindow::createModelViews()
@@ -269,4 +241,132 @@ void MainWindow::readSettings()
     //    comSelectModel->select(, QItemSelectionModel::ToggleCurrent);
 
     settings.endGroup();
+}
+
+void MainWindow::on_delComButton_clicked()
+{
+    auto index = ui->comTableView->currentIndex();
+    if (!index.isValid())
+        return;
+
+    QSqlDatabase::database().transaction(); // 启动事务
+    QSqlRecord record = comTableModel->record(index.row());
+    int comId = record.value(Simple_Id).toInt();
+    QSqlQuery query_p(QString("SELECT * FROM project WHERE company_id = %1").arg(comId)), query_e;
+    while (query_p.next()) {
+        int pid = query_p.value(Project_Id).toInt();
+        int result = QMessageBox::warning(this, "删除项目部",
+            QString("确定删除 ‘%1’ 及所属的全部人员吗？").arg(query_p.value(Project_Name).toString()),
+            QMessageBox::Yes | QMessageBox::No);
+        if (result == QMessageBox::No) {
+            QSqlDatabase::database().rollback();
+            return;
+        }
+        query_e.exec(QString("DELETE FROM employee WHERE project_id = %1").arg(pid));
+        query_e.exec(QString("DELETE FROM project WHERE id = %1").arg(pid));
+    }
+
+    comTableModel->removeRow(index.row());
+    comTableModel->submitAll();
+    QSqlDatabase::database().commit(); // 提交事务
+
+    updateCompanyModel();
+    ui->comTableView->setFocus();
+}
+
+void MainWindow::on_addComButton_clicked()
+{
+    int row = comTableModel->rowCount();
+    comTableModel->insertRow(row);
+
+    auto index = comTableModel->index(row, Simple_Name);
+    ui->comTableView->setCurrentIndex(index);
+    ui->comTableView->edit(index);
+}
+
+void MainWindow::on_delProButton_clicked()
+{
+    auto index = ui->proTableView->currentIndex();
+    if (!index.isValid())
+        return;
+
+    QSqlDatabase::database().transaction(); // 启动事务
+    QSqlRecord record = proTableModel->record(index.row());
+    int proId = record.value(Project_Id).toInt();
+    int numEmployee = 0;
+    QSqlQuery query(QString("SELECT COUNT(*) FROM employee "
+                            "WHERE project_id = %1")
+                        .arg(proId));
+    if (query.next())
+        numEmployee = query.value(0).toInt();
+    if (numEmployee > 0) {
+        int result = QMessageBox::warning(this, "删除项目部",
+            QString("确定删除 ‘%1’ 及所属的 %2 名人员吗？")
+                .arg(record.value(Project_Name).toString())
+                .arg(numEmployee),
+            QMessageBox::Yes | QMessageBox::No);
+        if (result == QMessageBox::No) {
+            QSqlDatabase::database().rollback();
+            return;
+        }
+        query.exec(QString("DELETE FROM employee "
+                           "WHERE project_id = %1")
+                       .arg(proId));
+    }
+
+    proTableModel->removeRow(index.row());
+    proTableModel->submitAll();
+    QSqlDatabase::database().commit(); // 提交事务
+
+    updateProjectModel();
+    ui->proTableView->setFocus();
+}
+
+void MainWindow::on_addProButton_clicked()
+{
+    int comRow = ui->comTableView->currentIndex().row();
+    auto comId = comTableModel->record(comRow).value(Simple_Id);
+    int row = proTableModel->rowCount();
+    proTableModel->insertRow(row);
+    proTableModel->setData(proTableModel->index(row, Project_Company_Id), comId);
+
+    auto index = proTableModel->index(row, Project_Name);
+    ui->proTableView->setCurrentIndex(index);
+    ui->proTableView->edit(index);
+}
+
+void MainWindow::on_delEmpButton_clicked()
+{
+    auto index = ui->empTableView->currentIndex();
+    if (!index.isValid())
+        return;
+
+    QSqlDatabase::database().transaction(); // 启动事务
+    QSqlRecord record = empRelTableModel->record(index.row());
+    int result = QMessageBox::warning(this, "删除人员",
+        QString("确定删除 ‘%1’ 吗？").arg(record.value(Employee_Name).toString()),
+        QMessageBox::Yes | QMessageBox::No);
+    if (result == QMessageBox::No) {
+        QSqlDatabase::database().rollback();
+        return;
+    }
+    empRelTableModel->removeRow(index.row());
+    empRelTableModel->submitAll();
+    QSqlDatabase::database().commit(); // 提交事务
+
+    updateEmployeeModel();
+    ui->empTableView->setFocus();
+}
+
+void MainWindow::on_addEmpButton_clicked()
+{
+    int proRow = ui->proTableView->currentIndex().row();
+    auto proId = proTableModel->record(proRow).value(Project_Id);
+    int row = empRelTableModel->rowCount();
+    empRelTableModel->insertRow(row);
+    empRelTableModel->setData(empRelTableModel->index(row, Employee_Project_Id), proId);
+
+    auto index = empRelTableModel->index(row, Employee_Name);
+    ui->empTableView->setCurrentIndex(index);
+    ui->empTableView->edit(index);
 }
