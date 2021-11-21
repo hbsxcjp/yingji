@@ -1,7 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+//#include <QApplication>
 //#include <QDataWidgetMapper>
+#include <QClipboard>
 #include <QDialog>
 #include <QFileInfo>
 #include <QItemSelectionModel>
@@ -12,6 +14,7 @@
 #include <QPair>
 #include <QSettings>
 #include <QSqlRecord>
+//#include <QtAlgorithms>
 #include <QtSql/QSql>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlError>
@@ -29,7 +32,6 @@ enum {
     Project_Id,
     Project_Company_Id,
     Project_Name,
-    Project_Sort_Id
 };
 
 enum {
@@ -38,13 +40,10 @@ enum {
     Employee_Role_Id,
     Employee_Name,
     Employee_Depart_Position,
-    Employee_Telephone
-};
-
-enum {
-    TabIndex_Company,
-    TabIndex_Project,
-    TabIndex_Employee
+    Employee_Telephone,
+    Employee_JoinDate,
+    Employee_QuitDate,
+    Employee_AtWork
 };
 
 QT_BEGIN_NAMESPACE
@@ -62,15 +61,9 @@ public:
 
 private slots:
 
-    void on_comItemSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
-    void on_proItemSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
-    void on_empItemSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
-
-    void on_actionAbout_triggered();
-
-    void on_proLineEdit_textChanged(const QString& arg1);
-    void on_empLineEdit_textChanged(const QString& arg1);
-    void on_telLineEdit_textChanged(const QString& arg1);
+    void on_comItemSelectionChanged();
+    void on_proItemSelectionChanged();
+    void on_empItemSelectionChanged();
 
     void on_delComButton_clicked();
     void on_addComButton_clicked();
@@ -79,27 +72,45 @@ private slots:
     void on_delEmpButton_clicked();
     void on_addEmpButton_clicked();
 
+    void on_proLineEdit_textChanged(const QString& arg1);
+    void on_empLineEdit_textChanged(const QString& arg1);
+    void on_telLineEdit_textChanged(const QString& arg1);
+
+    void on_showCompanyBox_clicked(bool checked);
+    void on_showProjectBox_clicked(bool checked);
+    void on_comSelectBox_clicked(bool checked);
+    void on_proSelectBox_clicked(bool checked);
+    void on_empSelectBox_clicked(bool checked);
+    void on_proLineClearButton_clicked();
+    void on_nameLineClearButton_clicked();
+    void on_telLineClearButton_clicked();
+
+    void on_actionCopy_triggered();
+    void on_actionAbout_triggered();
+
 private:
     void createModelViews();
     void updateCompanyModel();
     void updateProjectModel();
     void updateEmployeeModel();
 
-    int getSelectionId(const QSqlTableModel* tableModel,
+    QString getSelectionFilterString(const QSqlTableModel* tableModel,
         const QItemSelectionModel* itemSelectionModel);
-    QString getSelectionFilter(const QSqlTableModel* tableModel,
-        const QItemSelectionModel* itemSelectionModel, bool listAll);
-    QString getKeysFilter(const QString& text, const QString& regStr, const QString& fieldName);
+    QString getKeysFilterString(const QString& text, const QString& regStr, const QString& fieldName);
+    QString& toLineString(QString& str);
+    void copyGridToClipboard();
+    void copyTreeToClipboard();
 
     void writeSettings();
     void readSettings();
 
     QSqlDatabase DB;
-    QSqlQuery sqlQuery;
-    QSqlTableModel *comTableModel, *proTableModel;
-    QSqlRelationalTableModel* empRelTableModel;
+    QSqlTableModel* comTableModel;
+    QSqlRelationalTableModel *proTableModel, *empTableModel;
     QItemSelectionModel *comItemSelModel, *proItemSelModel, *empItemSelModel;
+    QItemSelection itemSelection;
 
+    QComboBox* copyComboBox;
     Ui::MainWindow* ui;
 };
 #endif // MAINWINDOW_H

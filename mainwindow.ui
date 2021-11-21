@@ -54,7 +54,7 @@
    <property name="contextMenuPolicy">
     <enum>Qt::NoContextMenu</enum>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_7">
+   <layout class="QHBoxLayout" name="horizontalLayout_9">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -64,6 +64,12 @@
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>21</height>
+         </size>
         </property>
         <property name="maximumSize">
          <size>
@@ -98,21 +104,24 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="comPushButton">
+         <widget class="QCheckBox" name="comSelectBox">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>24</height>
+           </size>
+          </property>
           <property name="maximumSize">
            <size>
-            <width>80</width>
+            <width>60</width>
             <height>16777215</height>
            </size>
           </property>
-          <property name="layoutDirection">
-           <enum>Qt::LeftToRight</enum>
-          </property>
           <property name="text">
-           <string>全部</string>
+           <string>全选</string>
           </property>
-          <property name="flat">
-           <bool>false</bool>
+          <property name="tristate">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -121,20 +130,20 @@
       <item>
        <widget class="QTableView" name="comTableView">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="minimumSize">
          <size>
-          <width>180</width>
+          <width>120</width>
           <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>350</width>
+          <width>200</width>
           <height>16777204</height>
          </size>
         </property>
@@ -148,7 +157,7 @@
          <enum>Qt::StrongFocus</enum>
         </property>
         <property name="contextMenuPolicy">
-         <enum>Qt::NoContextMenu</enum>
+         <enum>Qt::ActionsContextMenu</enum>
         </property>
         <property name="frameShape">
          <enum>QFrame::WinPanel</enum>
@@ -157,7 +166,7 @@
          <number>6</number>
         </property>
         <property name="editTriggers">
-         <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+         <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
         </property>
         <property name="tabKeyNavigation">
          <bool>false</bool>
@@ -179,6 +188,9 @@
         </attribute>
         <attribute name="horizontalHeaderDefaultSectionSize">
          <number>120</number>
+        </attribute>
+        <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+         <bool>false</bool>
         </attribute>
         <attribute name="horizontalHeaderStretchLastSection">
          <bool>true</bool>
@@ -215,12 +227,12 @@
          <widget class="QPushButton" name="delComButton">
           <property name="maximumSize">
            <size>
-            <width>50</width>
+            <width>40</width>
             <height>16777215</height>
            </size>
           </property>
           <property name="text">
-           <string> - </string>
+           <string>－</string>
           </property>
          </widget>
         </item>
@@ -228,12 +240,12 @@
          <widget class="QPushButton" name="addComButton">
           <property name="maximumSize">
            <size>
-            <width>50</width>
+            <width>40</width>
             <height>16777215</height>
            </size>
           </property>
           <property name="text">
-           <string> + </string>
+           <string>＋</string>
           </property>
          </widget>
         </item>
@@ -246,26 +258,49 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QWidget" name="layoutWidget">
-       <layout class="QVBoxLayout" name="verticalLayout_2">
+      <widget class="QWidget" name="">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QLabel" name="label_2">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>项目部(机关)(&amp;P)</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-          </property>
-          <property name="buddy">
-           <cstring>proTableView</cstring>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>项目部/机关(&amp;P)</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>proTableView</cstring>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="showCompanyBox">
+            <property name="maximumSize">
+             <size>
+              <width>90</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>显示公司</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="tristate">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -273,7 +308,7 @@
            <widget class="QLabel" name="label_5">
             <property name="maximumSize">
              <size>
-              <width>51</width>
+              <width>40</width>
               <height>16777215</height>
              </size>
             </property>
@@ -322,15 +357,34 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="proPushButton">
+           <widget class="QPushButton" name="proLineClearButton">
             <property name="maximumSize">
              <size>
-              <width>80</width>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>清除查找内容</string>
+            </property>
+            <property name="text">
+             <string>◊</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="proSelectBox">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
               <height>16777215</height>
              </size>
             </property>
             <property name="text">
-             <string>全部</string>
+             <string>全选</string>
+            </property>
+            <property name="tristate">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -346,13 +400,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>350</width>
+            <width>250</width>
             <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>450</width>
+            <width>16777215</width>
             <height>16777215</height>
            </size>
           </property>
@@ -365,6 +419,9 @@
           <property name="focusPolicy">
            <enum>Qt::StrongFocus</enum>
           </property>
+          <property name="contextMenuPolicy">
+           <enum>Qt::ActionsContextMenu</enum>
+          </property>
           <property name="frameShape">
            <enum>QFrame::WinPanel</enum>
           </property>
@@ -372,7 +429,7 @@
            <number>6</number>
           </property>
           <property name="editTriggers">
-           <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+           <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
           </property>
           <property name="tabKeyNavigation">
            <bool>false</bool>
@@ -393,19 +450,22 @@
            <bool>false</bool>
           </attribute>
           <attribute name="horizontalHeaderMinimumSectionSize">
-           <number>100</number>
+           <number>80</number>
           </attribute>
           <attribute name="horizontalHeaderDefaultSectionSize">
-           <number>320</number>
+           <number>80</number>
           </attribute>
           <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
-           <bool>true</bool>
+           <bool>false</bool>
           </attribute>
           <attribute name="horizontalHeaderStretchLastSection">
            <bool>true</bool>
           </attribute>
+          <attribute name="verticalHeaderCascadingSectionResizes">
+           <bool>true</bool>
+          </attribute>
           <attribute name="verticalHeaderMinimumSectionSize">
-           <number>24</number>
+           <number>30</number>
           </attribute>
           <attribute name="verticalHeaderDefaultSectionSize">
            <number>30</number>
@@ -428,14 +488,20 @@
           </item>
           <item>
            <widget class="QPushButton" name="delProButton">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
-              <width>50</width>
+              <width>40</width>
               <height>16777215</height>
              </size>
             </property>
             <property name="text">
-             <string> - </string>
+             <string>－</string>
             </property>
            </widget>
           </item>
@@ -443,12 +509,12 @@
            <widget class="QPushButton" name="addProButton">
             <property name="maximumSize">
              <size>
-              <width>50</width>
+              <width>40</width>
               <height>16777215</height>
              </size>
             </property>
             <property name="text">
-             <string> + </string>
+             <string>＋</string>
             </property>
            </widget>
           </item>
@@ -456,20 +522,40 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="layoutWidget">
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+      <widget class="QWidget" name="">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>小组人员(&amp;E)</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-          </property>
-          <property name="buddy">
-           <cstring>empTableView</cstring>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>小组人员(&amp;E)</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>empTableView</cstring>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="showProjectBox">
+            <property name="maximumSize">
+             <size>
+              <width>140</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>显示项目部/机关</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -511,6 +597,22 @@
            </widget>
           </item>
           <item>
+           <widget class="QPushButton" name="nameLineClearButton">
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>清除查找内容</string>
+            </property>
+            <property name="text">
+             <string>◊</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QLabel" name="label_7">
             <property name="text">
              <string>     电话号码 </string>
@@ -532,6 +634,38 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QPushButton" name="telLineClearButton">
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>清除查找内容</string>
+            </property>
+            <property name="text">
+             <string>◊</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="empSelectBox">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>全选</string>
+            </property>
+            <property name="tristate">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
@@ -544,7 +678,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>400</width>
+            <width>350</width>
             <height>0</height>
            </size>
           </property>
@@ -553,6 +687,9 @@
             <family>等线</family>
             <pointsize>9</pointsize>
            </font>
+          </property>
+          <property name="contextMenuPolicy">
+           <enum>Qt::ActionsContextMenu</enum>
           </property>
           <property name="inputMethodHints">
            <set>Qt::ImhNone</set>
@@ -564,7 +701,7 @@
            <number>6</number>
           </property>
           <property name="editTriggers">
-           <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+           <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
           </property>
           <property name="tabKeyNavigation">
            <bool>false</bool>
@@ -582,7 +719,7 @@
            <bool>true</bool>
           </property>
           <property name="wordWrap">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <attribute name="horizontalHeaderCascadingSectionResizes">
            <bool>false</bool>
@@ -593,14 +730,23 @@
           <attribute name="horizontalHeaderDefaultSectionSize">
            <number>80</number>
           </attribute>
+          <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+           <bool>false</bool>
+          </attribute>
           <attribute name="horizontalHeaderStretchLastSection">
            <bool>true</bool>
           </attribute>
+          <attribute name="verticalHeaderCascadingSectionResizes">
+           <bool>true</bool>
+          </attribute>
           <attribute name="verticalHeaderMinimumSectionSize">
-           <number>24</number>
+           <number>30</number>
           </attribute>
           <attribute name="verticalHeaderDefaultSectionSize">
-           <number>28</number>
+           <number>30</number>
+          </attribute>
+          <attribute name="verticalHeaderShowSortIndicator" stdset="0">
+           <bool>false</bool>
           </attribute>
          </widget>
         </item>
@@ -622,12 +768,12 @@
            <widget class="QPushButton" name="delEmpButton">
             <property name="maximumSize">
              <size>
-              <width>50</width>
+              <width>40</width>
               <height>16777215</height>
              </size>
             </property>
             <property name="text">
-             <string> - </string>
+             <string>－</string>
             </property>
            </widget>
           </item>
@@ -635,12 +781,12 @@
            <widget class="QPushButton" name="addEmpButton">
             <property name="maximumSize">
              <size>
-              <width>50</width>
+              <width>40</width>
               <height>16777215</height>
              </size>
             </property>
             <property name="text">
-             <string> + </string>
+             <string>＋</string>
             </property>
            </widget>
           </item>
@@ -665,6 +811,7 @@
     <property name="title">
      <string>文件(&amp;F)</string>
     </property>
+    <addaction name="actionCopy"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -687,6 +834,9 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionQuit"/>
+   <addaction name="separator"/>
+   <addaction name="actionCopy"/>
   </widget>
   <action name="actionQuit">
    <property name="icon">
@@ -718,16 +868,36 @@
     <string>Ctrl+Shift+A</string>
    </property>
   </action>
+  <action name="actionCopy">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/res/restore_down_32px.png</normaloff>:/res/restore_down_32px.png</iconset>
+   </property>
+   <property name="text">
+    <string>复制信息(&amp;C)</string>
+   </property>
+   <property name="toolTip">
+    <string>复制选择人员的信息</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
-  <tabstop>comPushButton</tabstop>
   <tabstop>comTableView</tabstop>
+  <tabstop>delComButton</tabstop>
+  <tabstop>addComButton</tabstop>
+  <tabstop>showCompanyBox</tabstop>
   <tabstop>proLineEdit</tabstop>
-  <tabstop>proPushButton</tabstop>
   <tabstop>proTableView</tabstop>
+  <tabstop>delProButton</tabstop>
+  <tabstop>addProButton</tabstop>
+  <tabstop>showProjectBox</tabstop>
   <tabstop>empLineEdit</tabstop>
-  <tabstop>telLineEdit</tabstop>
   <tabstop>empTableView</tabstop>
+  <tabstop>delEmpButton</tabstop>
+  <tabstop>addEmpButton</tabstop>
  </tabstops>
  <resources>
   <include location="res.qrc"/>
