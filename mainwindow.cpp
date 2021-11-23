@@ -20,47 +20,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_comItemSelectionChanged()
-{
-    int rowCount = comTableModel->rowCount(),
-        selCount = comItemSelModel->selectedRows().count();
-    ui->comSelectBox->setCheckState(selCount == 0
-            ? Qt::CheckState::Unchecked
-            : (selCount == rowCount ? Qt::CheckState::Checked : Qt::CheckState::PartiallyChecked));
-    ui->comLabel->setText(QString("选择 <font color=red><B>%1</B></font> 个")
-                              .arg(comItemSelModel->selectedRows().count()));
-
-    updateProjectModel();
-    on_proItemSelectionChanged();
-}
-
-void MainWindow::on_proItemSelectionChanged()
-{
-    int rowCount = proTableModel->rowCount(),
-        selCount = proItemSelModel->selectedRows().count();
-    ui->proSelectBox->setCheckState(selCount == 0
-            ? Qt::CheckState::Unchecked
-            : (selCount == rowCount ? Qt::CheckState::Checked : Qt::CheckState::PartiallyChecked));
-    ui->proLabel->setText(QString("共 <B>%1</B> 个，选择 <font color=red><B>%2</B></font> 个")
-                              .arg(rowCount)
-                              .arg(selCount));
-
-    updateEmployeeModel();
-    on_empItemSelectionChanged();
-}
-
-void MainWindow::on_empItemSelectionChanged()
-{
-    int rowCount = empTableModel->rowCount(),
-        selCount = empItemSelModel->selectedRows().count();
-    ui->empSelectBox->setCheckState(selCount == 0
-            ? Qt::CheckState::Unchecked
-            : (selCount == rowCount ? Qt::CheckState::Checked : Qt::CheckState::PartiallyChecked));
-    ui->empLabel->setText(QString("共 <B>%1</B> 名，选择 <font color=red><B>%2</B></font> 名")
-                              .arg(rowCount)
-                              .arg(selCount));
-}
-
 void MainWindow::createModelViews()
 {
     QString dbname { "data.db" };
@@ -80,6 +39,7 @@ void MainWindow::createModelViews()
     ui->comTableView->setModel(comTableModel);
     ui->comTableView->setSelectionModel(comItemSelModel);
     ui->comTableView->hideColumn(Simple_Id);
+    ui->comTableView->hideColumn(Simple_Start_Date);
     ui->comTableView->addAction(ui->actionCopy);
     connect(comItemSelModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
         this, SLOT(on_comItemSelectionChanged()));
@@ -88,7 +48,7 @@ void MainWindow::createModelViews()
     proTableModel = new QSqlRelationalTableModel(this);
     proItemSelModel = new QItemSelectionModel(proTableModel);
     proTableModel->setTable("project");
-    proTableModel->setRelation(Project_Company_Id, QSqlRelation("company", "id", "name"));
+    proTableModel->setRelation(Project_Company_Id, QSqlRelation("company", "id", "comName"));
     proTableModel->setHeaderData(Project_Company_Id, Qt::Horizontal, "公司");
     proTableModel->setHeaderData(Project_Name, Qt::Horizontal, "项目部/机关");
     proTableModel->setEditStrategy(QSqlTableModel::EditStrategy::OnFieldChange);
@@ -96,6 +56,7 @@ void MainWindow::createModelViews()
     ui->proTableView->setSelectionModel(proItemSelModel);
     ui->proTableView->setItemDelegate(new QSqlRelationalDelegate(ui->proTableView));
     ui->proTableView->hideColumn(Project_Id);
+    ui->proTableView->hideColumn(Project_Start_Date);
     ui->proTableView->addAction(ui->actionCopy);
     connect(proItemSelModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
         this, SLOT(on_proItemSelectionChanged()));
@@ -116,9 +77,7 @@ void MainWindow::createModelViews()
     ui->empTableView->setSelectionModel(empItemSelModel);
     ui->empTableView->setItemDelegate(new QSqlRelationalDelegate(ui->empTableView));
     ui->empTableView->hideColumn(Employee_Id);
-    ui->empTableView->hideColumn(Employee_JoinDate);
-    ui->empTableView->hideColumn(Employee_QuitDate);
-    ui->empTableView->hideColumn(Employee_AtWork);
+    ui->empTableView->hideColumn(Employee_Start_Date);
     ui->empTableView->addAction(ui->actionCopy);
     connect(empItemSelModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
         this, SLOT(on_empItemSelectionChanged()));
@@ -338,6 +297,47 @@ void MainWindow::readSettings()
     settings.endGroup();
 }
 
+void MainWindow::on_comItemSelectionChanged()
+{
+    int rowCount = comTableModel->rowCount(),
+        selCount = comItemSelModel->selectedRows().count();
+    ui->comSelectBox->setCheckState(selCount == 0
+            ? Qt::CheckState::Unchecked
+            : (selCount == rowCount ? Qt::CheckState::Checked : Qt::CheckState::PartiallyChecked));
+    ui->comLabel->setText(QString("选择 <font color=red><B>%1</B></font> 个")
+                              .arg(comItemSelModel->selectedRows().count()));
+
+    updateProjectModel();
+    on_proItemSelectionChanged();
+}
+
+void MainWindow::on_proItemSelectionChanged()
+{
+    int rowCount = proTableModel->rowCount(),
+        selCount = proItemSelModel->selectedRows().count();
+    ui->proSelectBox->setCheckState(selCount == 0
+            ? Qt::CheckState::Unchecked
+            : (selCount == rowCount ? Qt::CheckState::Checked : Qt::CheckState::PartiallyChecked));
+    ui->proLabel->setText(QString("共 <B>%1</B> 个，选择 <font color=red><B>%2</B></font> 个")
+                              .arg(rowCount)
+                              .arg(selCount));
+
+    updateEmployeeModel();
+    on_empItemSelectionChanged();
+}
+
+void MainWindow::on_empItemSelectionChanged()
+{
+    int rowCount = empTableModel->rowCount(),
+        selCount = empItemSelModel->selectedRows().count();
+    ui->empSelectBox->setCheckState(selCount == 0
+            ? Qt::CheckState::Unchecked
+            : (selCount == rowCount ? Qt::CheckState::Checked : Qt::CheckState::PartiallyChecked));
+    ui->empLabel->setText(QString("共 <B>%1</B> 名，选择 <font color=red><B>%2</B></font> 名")
+                              .arg(rowCount)
+                              .arg(selCount));
+}
+
 void MainWindow::on_delComButton_clicked()
 {
     auto selIndexList = comItemSelModel->selectedRows();
@@ -382,6 +382,7 @@ void MainWindow::on_addComButton_clicked()
 {
     int row = comTableModel->rowCount();
     comTableModel->insertRow(row);
+    comTableModel->setData(comTableModel->index(row, Simple_Start_Date), QDate::currentDate());
 
     auto index = comTableModel->index(row, Simple_Name);
     ui->comTableView->setCurrentIndex(index);
@@ -444,6 +445,7 @@ void MainWindow::on_addProButton_clicked()
     int row = proTableModel->rowCount();
     proTableModel->insertRow(row);
     proTableModel->setData(proTableModel->index(row, Project_Company_Id), comId);
+    proTableModel->setData(proTableModel->index(row, Project_Start_Date), QDate::currentDate());
 
     auto index = proTableModel->index(row, Project_Name);
     ui->proTableView->setCurrentIndex(index);
@@ -490,7 +492,9 @@ void MainWindow::on_addEmpButton_clicked()
     auto proId = proTableModel->record(selIndexList[0].row()).value(Project_Id);
     int row = empTableModel->rowCount();
     empTableModel->insertRow(row);
-    empTableModel->setData(empTableModel->index(row, Employee_Project_Id), proId);
+    empTableModel->setData(empTableModel->index(row, Employee_Project_Id), proId.toInt());
+    empTableModel->setData(empTableModel->index(row, Employee_Role_Id), 1);
+    empTableModel->setData(empTableModel->index(row, Employee_Start_Date), QDate::currentDate());
 
     auto index = empTableModel->index(row, Employee_Role_Id);
     ui->empTableView->setCurrentIndex(index);
@@ -536,7 +540,7 @@ void MainWindow::on_comSelectBox_clicked(bool checked)
 {
     if (checked) {
         auto topLeft = comTableModel->index(0, 0),
-             bottomRight = comTableModel->index(comTableModel->rowCount() - 1, Simple_Name);
+             bottomRight = comTableModel->index(comTableModel->rowCount() - 1, Simple_Start_Date);
         itemSelection.select(topLeft, bottomRight);
         comItemSelModel->select(itemSelection, QItemSelectionModel::Select);
     } else
@@ -547,7 +551,7 @@ void MainWindow::on_proSelectBox_clicked(bool checked)
 {
     if (checked) {
         auto topLeft = proTableModel->index(0, 0),
-             bottomRight = proTableModel->index(proTableModel->rowCount() - 1, Project_Name);
+             bottomRight = proTableModel->index(proTableModel->rowCount() - 1, Project_Start_Date);
         itemSelection.select(topLeft, bottomRight);
         proItemSelModel->select(itemSelection, QItemSelectionModel::Select);
     } else
@@ -558,7 +562,7 @@ void MainWindow::on_empSelectBox_clicked(bool checked)
 {
     if (checked) {
         auto topLeft = empTableModel->index(0, 0),
-             bottomRight = empTableModel->index(empTableModel->rowCount() - 1, Employee_AtWork);
+             bottomRight = empTableModel->index(empTableModel->rowCount() - 1, Employee_Start_Date);
         itemSelection.select(topLeft, bottomRight);
         empItemSelModel->select(itemSelection, QItemSelectionModel::Select);
     } else

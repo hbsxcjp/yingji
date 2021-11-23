@@ -3,7 +3,9 @@
 
 //#include <QApplication>
 //#include <QDataWidgetMapper>
+//#include <QtAlgorithms>
 #include <QClipboard>
+#include <QDate>
 #include <QDialog>
 #include <QFileInfo>
 #include <QItemSelectionModel>
@@ -14,7 +16,6 @@
 #include <QPair>
 #include <QSettings>
 #include <QSqlRecord>
-//#include <QtAlgorithms>
 #include <QtSql/QSql>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlError>
@@ -25,13 +26,17 @@
 
 enum {
     Simple_Id,
-    Simple_Name
+    Simple_Name,
+    Simple_Start_Date,
+    Simple_End_Date
 };
 
 enum {
     Project_Id,
     Project_Company_Id,
     Project_Name,
+    Project_Start_Date,
+    Project_End_Date
 };
 
 enum {
@@ -41,9 +46,8 @@ enum {
     Employee_Name,
     Employee_Depart_Position,
     Employee_Telephone,
-    Employee_JoinDate,
-    Employee_QuitDate,
-    Employee_AtWork
+    Employee_Start_Date,
+    Employee_End_Date
 };
 
 QT_BEGIN_NAMESPACE
