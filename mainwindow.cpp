@@ -356,7 +356,7 @@ void MainWindow::on_delComButton_clicked()
                               .arg(comId)),
             query_e;
         while (query_p.next()) {
-            int pid = query_p.value(Project_Id).toInt();
+            int proId = query_p.value(Project_Id).toInt();
             int result = QMessageBox::warning(this, "删除项目部",
                 QString("确定删除 ‘%1’ 及所属的全部人员吗？").arg(query_p.value(Project_Name).toString()),
                 QMessageBox::Yes | QMessageBox::No);
@@ -364,8 +364,21 @@ void MainWindow::on_delComButton_clicked()
                 QSqlDatabase::database().rollback();
                 return;
             }
-            query_e.exec(QString("DELETE FROM employee WHERE project_id = %1").arg(pid));
-            query_e.exec(QString("DELETE FROM project WHERE id = %1").arg(pid));
+
+            query_e.exec(QString("INSERT INTO employee_history "
+                                 "(project_id, role_id, empName, depart_position, telephone, start_date, end_date) "
+                                 "SELECT (project_id, role_id, empName, depart_position, telephone, start_date, '%1') "
+                                 "FROM employee WHERE project_id = %2")
+                             .arg(QDate::currentDate().toString())
+                             .arg(proId));
+            query_e.exec(QString("INSERT INTO project_history "
+                                 "(company_id, proName, start_date, end_date) "
+                                 "SELECT (company_id, proName, start_date, '%1') "
+                                 "FROM project WHERE company_id = %2")
+                             .arg(QDate::currentDate().toString())
+                             .arg(comId));
+            query_e.exec(QString("DELETE FROM employee WHERE project_id = %1").arg(proId));
+            query_e.exec(QString("DELETE FROM project WHERE id = %1").arg(proId));
         }
 
         comTableModel->removeRow(index.row());
@@ -418,6 +431,20 @@ void MainWindow::on_delProButton_clicked()
                 QSqlDatabase::database().rollback();
                 continue;
             }
+
+            query.exec(QString("INSERT INTO employee_history "
+                               "(project_id, role_id, empName, depart_position, telephone, start_date, end_date) "
+                               "SELECT (project_id, role_id, empName, depart_position, telephone, start_date, '%1') "
+                               "FROM employee WHERE project_id = %2")
+                           .arg(QDate::currentDate().toString())
+                           .arg(proId));
+            query.exec(QString("INSERT INTO project_history "
+                               "(company_id, proName, start_date, end_date) "
+                               "SELECT (company_id, proName, start_date, '%1') "
+                               "FROM project WHERE project_id = %2")
+                           .arg(QDate::currentDate().toString())
+                           .arg(proId));
+
             query.exec(QString("DELETE FROM employee "
                                "WHERE project_id = %1")
                            .arg(proId));
@@ -471,6 +498,13 @@ void MainWindow::on_delEmpButton_clicked()
             QSqlDatabase::database().rollback();
             return;
         }
+
+        QSqlQuery query(QString("INSERT INTO employee_history "
+                                "(project_id, role_id, empName, depart_position, telephone, start_date, end_date) "
+                                "SELECT (project_id, role_id, empName, depart_position, telephone, start_date, '%1') "
+                                "FROM employee WHERE id = %2")
+                            .arg(QDate::currentDate().toString())
+                            .arg(record.value(Employee_Id).toInt()));
         empTableModel->removeRow(index.row());
         empTableModel->submitAll();
         QSqlDatabase::database().commit(); // 提交事务
