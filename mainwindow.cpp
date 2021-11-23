@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+static QString dateFormat { "yyyy'-'MM'-'dd" };
+
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -114,9 +116,9 @@ void MainWindow::updateProjectModel()
 void MainWindow::updateEmployeeModel()
 {
     // 人员模型和视图更新
-    QString sql { getSelectionFilterString(proTableModel, proItemSelModel)
-        + getKeysFilterString(ui->empLineEdit->text(), "\\W+", "empName")
-        + getKeysFilterString(ui->telLineEdit->text(), "\\D+", "telephone") };
+    QString filterProid { getSelectionFilterString(proTableModel, proItemSelModel) },
+        sql { filterProid + getKeysFilterString(ui->empLineEdit->text(), "\\W+", "empName")
+            + getKeysFilterString(ui->telLineEdit->text(), "\\D+", "telephone") };
     //    printf((sql + '\n').toUtf8());
 
     empTableModel->setFilter(sql);
@@ -349,6 +351,7 @@ void MainWindow::on_delComButton_clicked()
 
     for (auto& index : selIndexList) {
         QSqlDatabase::database().transaction(); // 启动事务
+        bool isReal = true;
         QSqlRecord record = comTableModel->record(index.row());
         int comId = record.value(Simple_Id).toInt();
         QSqlQuery query_p(QString("SELECT id, company_id, proName FROM project "
@@ -362,25 +365,41 @@ void MainWindow::on_delComButton_clicked()
                 QMessageBox::Yes | QMessageBox::No);
             if (result == QMessageBox::No) {
                 QSqlDatabase::database().rollback();
-                return;
+                isReal = false;
+                break;
             }
 
+            // 存储人员历史记录
             query_e.exec(QString("INSERT INTO employee_history "
                                  "(project_id, role_id, empName, depart_position, telephone, start_date, end_date) "
-                                 "SELECT (project_id, role_id, empName, depart_position, telephone, start_date, '%1') "
-                                 "FROM employee WHERE project_id = %2")
-                             .arg(QDate::currentDate().toString())
+                                 "SELECT project_id, role_id, empName, depart_position, telephone, start_date, '%1' "
+                                 "FROM employee WHERE project_id = %2;")
+                             .arg(QDate::currentDate().toString(dateFormat))
                              .arg(proId));
+            // 删除人员记录
+            query_e.exec(QString("DELETE FROM employee WHERE project_id = %1;").arg(proId));
+
+            // 存储项目历史记录
             query_e.exec(QString("INSERT INTO project_history "
                                  "(company_id, proName, start_date, end_date) "
-                                 "SELECT (company_id, proName, start_date, '%1') "
-                                 "FROM project WHERE company_id = %2")
-                             .arg(QDate::currentDate().toString())
-                             .arg(comId));
-            query_e.exec(QString("DELETE FROM employee WHERE project_id = %1").arg(proId));
-            query_e.exec(QString("DELETE FROM project WHERE id = %1").arg(proId));
+                                 "SELECT company_id, proName, start_date, '%1' "
+                                 "FROM project WHERE id = %2;")
+                             .arg(QDate::currentDate().toString(dateFormat))
+                             .arg(proId));
+            // 删除项目记录
+            query_e.exec(QString("DELETE FROM project WHERE id = %1;").arg(proId));
         }
 
+        if (!isReal)
+            continue;
+
+        // 存储公司历史记录
+        query_e.exec(QString("INSERT INTO company_history "
+                             "(comName, start_date, end_date) "
+                             "SELECT comName, start_date, '%1' "
+                             "FROM company WHERE id = %2;")
+                         .arg(QDate::currentDate().toString(dateFormat))
+                         .arg(comId));
         comTableModel->removeRow(index.row());
         comTableModel->submitAll();
         QSqlDatabase::database().commit(); // 提交事务
@@ -395,7 +414,9 @@ void MainWindow::on_addComButton_clicked()
 {
     int row = comTableModel->rowCount();
     comTableModel->insertRow(row);
-    comTableModel->setData(comTableModel->index(row, Simple_Start_Date), QDate::currentDate());
+    comTableModel->setData(comTableModel->index(row, Simple_Start_Date),
+        QDate::currentDate().toString(dateFormat));
+    //    comTableModel->submit();
 
     auto index = comTableModel->index(row, Simple_Name);
     ui->comTableView->setCurrentIndex(index);
@@ -432,24 +453,26 @@ void MainWindow::on_delProButton_clicked()
                 continue;
             }
 
+            // 存储人员历史记录
             query.exec(QString("INSERT INTO employee_history "
                                "(project_id, role_id, empName, depart_position, telephone, start_date, end_date) "
-                               "SELECT (project_id, role_id, empName, depart_position, telephone, start_date, '%1') "
-                               "FROM employee WHERE project_id = %2")
-                           .arg(QDate::currentDate().toString())
+                               "SELECT project_id, role_id, empName, depart_position, telephone, start_date, '%1' "
+                               "FROM employee WHERE project_id = %2;")
+                           .arg(QDate::currentDate().toString(dateFormat))
                            .arg(proId));
-            query.exec(QString("INSERT INTO project_history "
-                               "(company_id, proName, start_date, end_date) "
-                               "SELECT (company_id, proName, start_date, '%1') "
-                               "FROM project WHERE project_id = %2")
-                           .arg(QDate::currentDate().toString())
-                           .arg(proId));
-
+            // 删除人员记录
             query.exec(QString("DELETE FROM employee "
-                               "WHERE project_id = %1")
+                               "WHERE project_id = %1;")
                            .arg(proId));
         }
 
+        // 存储项目历史记录
+        query.exec(QString("INSERT INTO project_history "
+                           "(company_id, proName, start_date, end_date) "
+                           "SELECT company_id, proName, start_date, '%1' "
+                           "FROM project WHERE id = %2;")
+                       .arg(QDate::currentDate().toString(dateFormat))
+                       .arg(proId));
         proTableModel->removeRow(index.row());
         proTableModel->submitAll();
         QSqlDatabase::database().commit(); // 提交事务
@@ -468,11 +491,13 @@ void MainWindow::on_addProButton_clicked()
         return;
     }
 
-    auto comId = comTableModel->record(selIndexList[0].row()).value(Simple_Id);
+    proTableModel->relationModel(Project_Company_Id)->select(); // 刷新公司列表
     int row = proTableModel->rowCount();
     proTableModel->insertRow(row);
-    proTableModel->setData(proTableModel->index(row, Project_Company_Id), comId);
-    proTableModel->setData(proTableModel->index(row, Project_Start_Date), QDate::currentDate());
+    proTableModel->setData(proTableModel->index(row, Project_Company_Id),
+        comTableModel->record(selIndexList[0].row()).value(Simple_Id));
+    proTableModel->setData(proTableModel->index(row, Project_Start_Date),
+        QDate::currentDate().toString(dateFormat));
 
     auto index = proTableModel->index(row, Project_Name);
     ui->proTableView->setCurrentIndex(index);
@@ -499,11 +524,12 @@ void MainWindow::on_delEmpButton_clicked()
             return;
         }
 
+        // 存储人员历史记录
         QSqlQuery query(QString("INSERT INTO employee_history "
                                 "(project_id, role_id, empName, depart_position, telephone, start_date, end_date) "
-                                "SELECT (project_id, role_id, empName, depart_position, telephone, start_date, '%1') "
-                                "FROM employee WHERE id = %2")
-                            .arg(QDate::currentDate().toString())
+                                "SELECT project_id, role_id, empName, depart_position, telephone, start_date, '%1' "
+                                "FROM employee WHERE id = %2;")
+                            .arg(QDate::currentDate().toString(dateFormat))
                             .arg(record.value(Employee_Id).toInt()));
         empTableModel->removeRow(index.row());
         empTableModel->submitAll();
@@ -523,12 +549,14 @@ void MainWindow::on_addEmpButton_clicked()
         return;
     }
 
-    auto proId = proTableModel->record(selIndexList[0].row()).value(Project_Id);
+    empTableModel->relationModel(Employee_Project_Id)->select(); //刷新项目部列表
     int row = empTableModel->rowCount();
     empTableModel->insertRow(row);
-    empTableModel->setData(empTableModel->index(row, Employee_Project_Id), proId.toInt());
+    empTableModel->setData(empTableModel->index(row, Employee_Project_Id),
+        proTableModel->record(selIndexList[0].row()).value(Project_Id));
     empTableModel->setData(empTableModel->index(row, Employee_Role_Id), 1);
-    empTableModel->setData(empTableModel->index(row, Employee_Start_Date), QDate::currentDate());
+    empTableModel->setData(empTableModel->index(row, Employee_Start_Date),
+        QDate::currentDate().toString(dateFormat));
 
     auto index = empTableModel->index(row, Employee_Role_Id);
     ui->empTableView->setCurrentIndex(index);

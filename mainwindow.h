@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+// C:\Qt\Qt5.14.2\5.14.2\mingw73_64\bin
+
 //#include <QApplication>
 //#include <QDataWidgetMapper>
 //#include <QtAlgorithms>

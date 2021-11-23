@@ -65,8 +65,38 @@
         <string>公司(&amp;C)</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
+        <property name="spacing">
+         <number>1</number>
+        </property>
+        <property name="leftMargin">
+         <number>1</number>
+        </property>
+        <property name="topMargin">
+         <number>1</number>
+        </property>
+        <property name="rightMargin">
+         <number>1</number>
+        </property>
+        <property name="bottomMargin">
+         <number>1</number>
+        </property>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <property name="leftMargin">
+           <number>2</number>
+          </property>
+          <property name="topMargin">
+           <number>2</number>
+          </property>
+          <property name="rightMargin">
+           <number>2</number>
+          </property>
+          <property name="bottomMargin">
+           <number>2</number>
+          </property>
           <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">
@@ -87,13 +117,13 @@
            <widget class="QCheckBox" name="comSelectBox">
             <property name="minimumSize">
              <size>
-              <width>50</width>
+              <width>60</width>
               <height>24</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>50</width>
+              <width>60</width>
               <height>16777215</height>
              </size>
             </property>
@@ -238,18 +268,54 @@
         <string>项目部/机关(&amp;P)</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
+        <property name="spacing">
+         <number>1</number>
+        </property>
+        <property name="leftMargin">
+         <number>1</number>
+        </property>
+        <property name="topMargin">
+         <number>1</number>
+        </property>
+        <property name="rightMargin">
+         <number>1</number>
+        </property>
+        <property name="bottomMargin">
+         <number>1</number>
+        </property>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <property name="leftMargin">
+           <number>2</number>
+          </property>
+          <property name="topMargin">
+           <number>2</number>
+          </property>
+          <property name="rightMargin">
+           <number>2</number>
+          </property>
+          <property name="bottomMargin">
+           <number>2</number>
+          </property>
           <item>
            <widget class="QCheckBox" name="showCompanyBox">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
-              <width>72</width>
+              <width>60</width>
               <height>16777215</height>
              </size>
             </property>
             <property name="text">
-             <string>显示公司</string>
+             <string>公司</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -261,6 +327,12 @@
           </item>
           <item>
            <widget class="QLabel" name="label_5">
+            <property name="minimumSize">
+             <size>
+              <width>40</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
               <width>40</width>
@@ -329,9 +401,15 @@
           </item>
           <item>
            <widget class="QCheckBox" name="proSelectBox">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
-              <width>50</width>
+              <width>60</width>
               <height>16777215</height>
              </size>
             </property>
@@ -408,7 +486,7 @@
            <number>80</number>
           </attribute>
           <attribute name="horizontalHeaderDefaultSectionSize">
-           <number>80</number>
+           <number>120</number>
           </attribute>
           <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
            <bool>false</bool>
@@ -482,18 +560,54 @@
         <string>小组人员(&amp;E)</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
+        <property name="spacing">
+         <number>1</number>
+        </property>
+        <property name="leftMargin">
+         <number>1</number>
+        </property>
+        <property name="topMargin">
+         <number>1</number>
+        </property>
+        <property name="rightMargin">
+         <number>1</number>
+        </property>
+        <property name="bottomMargin">
+         <number>1</number>
+        </property>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <property name="leftMargin">
+           <number>2</number>
+          </property>
+          <property name="topMargin">
+           <number>2</number>
+          </property>
+          <property name="rightMargin">
+           <number>2</number>
+          </property>
+          <property name="bottomMargin">
+           <number>2</number>
+          </property>
           <item>
            <widget class="QCheckBox" name="showProjectBox">
+            <property name="minimumSize">
+             <size>
+              <width>110</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
-              <width>115</width>
+              <width>110</width>
               <height>16777215</height>
              </size>
             </property>
             <property name="text">
-             <string>显示项目部/机关</string>
+             <string>项目部/机关</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -502,6 +616,18 @@
           </item>
           <item>
            <widget class="QLabel" name="label_6">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>80</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string>查找：姓名</string>
             </property>
@@ -539,6 +665,12 @@
           </item>
           <item>
            <widget class="QPushButton" name="nameLineClearButton">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
               <width>30</width>
@@ -555,6 +687,18 @@
           </item>
           <item>
            <widget class="QLabel" name="label_7">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>80</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string>     电话号码 </string>
             </property>
@@ -562,6 +706,12 @@
           </item>
           <item>
            <widget class="QLineEdit" name="telLineEdit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="font">
              <font>
               <pointsize>9</pointsize>
@@ -577,6 +727,12 @@
           </item>
           <item>
            <widget class="QPushButton" name="telLineClearButton">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
               <width>30</width>
@@ -593,9 +749,15 @@
           </item>
           <item>
            <widget class="QCheckBox" name="empSelectBox">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
-              <width>50</width>
+              <width>60</width>
               <height>16777215</height>
              </size>
             </property>
@@ -669,7 +831,7 @@
            <number>80</number>
           </attribute>
           <attribute name="horizontalHeaderDefaultSectionSize">
-           <number>80</number>
+           <number>120</number>
           </attribute>
           <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
            <bool>false</bool>
@@ -745,7 +907,7 @@
      <x>0</x>
      <y>0</y>
      <width>1036</width>
-     <height>22</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_F">
@@ -826,14 +988,23 @@
   </action>
  </widget>
  <tabstops>
+  <tabstop>comSelectBox</tabstop>
   <tabstop>comTableView</tabstop>
   <tabstop>delComButton</tabstop>
   <tabstop>addComButton</tabstop>
+  <tabstop>showCompanyBox</tabstop>
   <tabstop>proLineEdit</tabstop>
+  <tabstop>proLineClearButton</tabstop>
+  <tabstop>proSelectBox</tabstop>
   <tabstop>proTableView</tabstop>
   <tabstop>delProButton</tabstop>
   <tabstop>addProButton</tabstop>
+  <tabstop>showProjectBox</tabstop>
   <tabstop>empLineEdit</tabstop>
+  <tabstop>nameLineClearButton</tabstop>
+  <tabstop>telLineEdit</tabstop>
+  <tabstop>telLineClearButton</tabstop>
+  <tabstop>empSelectBox</tabstop>
   <tabstop>empTableView</tabstop>
   <tabstop>delEmpButton</tabstop>
   <tabstop>addEmpButton</tabstop>
