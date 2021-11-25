@@ -234,7 +234,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="delComButton">
+           <widget class="QPushButton" name="comDelButton">
             <property name="maximumSize">
              <size>
               <width>40</width>
@@ -247,7 +247,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="addComButton">
+           <widget class="QPushButton" name="comAddButton">
             <property name="maximumSize">
              <size>
               <width>40</width>
@@ -520,7 +520,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="delProButton">
+           <widget class="QPushButton" name="proDelButton">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -539,7 +539,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="addProButton">
+           <widget class="QPushButton" name="proAddButton">
             <property name="maximumSize">
              <size>
               <width>40</width>
@@ -868,7 +868,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="delEmpButton">
+           <widget class="QPushButton" name="empDelButton">
             <property name="maximumSize">
              <size>
               <width>40</width>
@@ -881,7 +881,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="addEmpButton">
+           <widget class="QPushButton" name="empAddButton">
             <property name="maximumSize">
              <size>
               <width>40</width>
@@ -915,6 +915,7 @@
      <string>文件(&amp;F)</string>
     </property>
     <addaction name="actionCopy"/>
+    <addaction name="actionHistory"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -939,6 +940,7 @@
    </attribute>
    <addaction name="actionQuit"/>
    <addaction name="separator"/>
+   <addaction name="actionHistory"/>
    <addaction name="actionCopy"/>
   </widget>
   <action name="actionQuit">
@@ -986,19 +988,34 @@
     <string>Ctrl+C</string>
    </property>
   </action>
+  <action name="actionHistory">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/res/computer_32px.png</normaloff>:/res/computer_32px.png</iconset>
+   </property>
+   <property name="text">
+    <string>历史记录(&amp;H)</string>
+   </property>
+   <property name="toolTip">
+    <string>管理维护历史记录</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>comSelectBox</tabstop>
   <tabstop>comTableView</tabstop>
-  <tabstop>delComButton</tabstop>
-  <tabstop>addComButton</tabstop>
+  <tabstop>comDelButton</tabstop>
+  <tabstop>comAddButton</tabstop>
   <tabstop>showCompanyBox</tabstop>
   <tabstop>proLineEdit</tabstop>
   <tabstop>proLineClearButton</tabstop>
   <tabstop>proSelectBox</tabstop>
   <tabstop>proTableView</tabstop>
-  <tabstop>delProButton</tabstop>
-  <tabstop>addProButton</tabstop>
+  <tabstop>proDelButton</tabstop>
+  <tabstop>proAddButton</tabstop>
   <tabstop>showProjectBox</tabstop>
   <tabstop>empLineEdit</tabstop>
   <tabstop>nameLineClearButton</tabstop>
@@ -1006,8 +1023,8 @@
   <tabstop>telLineClearButton</tabstop>
   <tabstop>empSelectBox</tabstop>
   <tabstop>empTableView</tabstop>
-  <tabstop>delEmpButton</tabstop>
-  <tabstop>addEmpButton</tabstop>
+  <tabstop>empDelButton</tabstop>
+  <tabstop>empAddButton</tabstop>
  </tabstops>
  <resources>
   <include location="res.qrc"/>

@@ -1,56 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-// C:\Qt\Qt5.14.2\5.14.2\mingw73_64\bin
-
-//#include <QApplication>
-//#include <QDataWidgetMapper>
-//#include <QtAlgorithms>
-#include <QClipboard>
-#include <QDate>
-#include <QDialog>
-#include <QFileInfo>
-#include <QItemSelectionModel>
-#include <QMainWindow>
-#include <QMap>
-#include <QMessageBox>
-#include <QModelIndex>
-#include <QPair>
-#include <QSettings>
-#include <QSqlRecord>
-#include <QtSql/QSql>
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlError>
-#include <QtSql/QSqlQuery>
-#include <QtSql/QSqlQueryModel>
-#include <QtSql/QSqlRelationalDelegate>
-#include <QtSql/QSqlRelationalTableModel>
-
-enum {
-    Simple_Id,
-    Simple_Name,
-    Simple_Start_Date,
-    Simple_End_Date
-};
-
-enum {
-    Project_Id,
-    Project_Company_Id,
-    Project_Name,
-    Project_Start_Date,
-    Project_End_Date
-};
-
-enum {
-    Employee_Id,
-    Employee_Project_Id,
-    Employee_Role_Id,
-    Employee_Name,
-    Employee_Depart_Position,
-    Employee_Telephone,
-    Employee_Start_Date,
-    Employee_End_Date
-};
+#include "common.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -71,12 +22,12 @@ private slots:
     void on_proItemSelectionChanged();
     void on_empItemSelectionChanged();
 
-    void on_delComButton_clicked();
-    void on_addComButton_clicked();
-    void on_delProButton_clicked();
-    void on_addProButton_clicked();
-    void on_delEmpButton_clicked();
-    void on_addEmpButton_clicked();
+    void on_comDelButton_clicked();
+    void on_comAddButton_clicked();
+    void on_proDelButton_clicked();
+    void on_proAddButton_clicked();
+    void on_empDelButton_clicked();
+    void on_empAddButton_clicked();
 
     void on_proLineEdit_textChanged(const QString& arg1);
     void on_empLineEdit_textChanged(const QString& arg1);
@@ -93,6 +44,8 @@ private slots:
 
     void on_actionCopy_triggered();
     void on_actionAbout_triggered();
+
+    void on_actionHistory_triggered();
 
 private:
     void createModelViews();
