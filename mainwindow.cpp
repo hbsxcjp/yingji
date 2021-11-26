@@ -35,6 +35,8 @@ void MainWindow::createModelViews()
     comTableModel = new QSqlTableModel(this);
     comItemSelModel = new QItemSelectionModel(comTableModel);
     comTableModel->setTable("company");
+    comTableModel->setFilter("end_date IS NULL ");
+    comTableModel->setSort(Company_Id, Qt::SortOrder::AscendingOrder);
     comTableModel->setHeaderData(Company_Name, Qt::Horizontal, "公司");
     comTableModel->setEditStrategy(QSqlTableModel::EditStrategy::OnFieldChange);
     ui->comTableView->setModel(comTableModel);
@@ -50,6 +52,7 @@ void MainWindow::createModelViews()
     proTableModel = new QSqlRelationalTableModel(this);
     proItemSelModel = new QItemSelectionModel(proTableModel);
     proTableModel->setTable("project");
+    proTableModel->setSort(Project_Id, Qt::SortOrder::AscendingOrder);
     proTableModel->setRelation(Project_Company_Id, QSqlRelation("company", "id", "comName"));
     proTableModel->setHeaderData(Project_Company_Id, Qt::Horizontal, "公司");
     proTableModel->setHeaderData(Project_Name, Qt::Horizontal, "项目部/机关");
@@ -68,6 +71,7 @@ void MainWindow::createModelViews()
     empTableModel = new QSqlRelationalTableModel(this);
     empItemSelModel = new QItemSelectionModel(empTableModel);
     empTableModel->setTable("employee");
+    empTableModel->setSort(Employee_Id, Qt::SortOrder::AscendingOrder);
     empTableModel->setRelation(Employee_Project_Id, QSqlRelation("project", "id", "proName"));
     empTableModel->setRelation(Employee_Role_Id, QSqlRelation("role", "id", "rolName"));
     empTableModel->setHeaderData(Employee_Project_Id, Qt::Horizontal, "项目/机关");
@@ -98,8 +102,6 @@ void MainWindow::createModelViews()
 
 void MainWindow::updateCompanyModel()
 {
-    comTableModel->setFilter("end_date IS NULL ");
-    comTableModel->setSort(Company_Id, Qt::SortOrder::AscendingOrder);
     comTableModel->select();
     ui->proTableView->resizeColumnsToContents();
 }
@@ -113,7 +115,6 @@ void MainWindow::updateProjectModel()
     printf((sql + '\n').toUtf8());
 
     proTableModel->setFilter(sql);
-    proTableModel->setSort(Project_Id, Qt::SortOrder::AscendingOrder);
     proTableModel->select();
     ui->proTableView->resizeColumnsToContents();
 }
@@ -127,7 +128,6 @@ void MainWindow::updateEmployeeModel()
     //    printf((sql + '\n').toUtf8());
 
     empTableModel->setFilter(sql);
-    empTableModel->setSort(Employee_Id, Qt::SortOrder::AscendingOrder);
     empTableModel->select();
     ui->empTableView->resizeColumnsToContents();
 }

@@ -27,6 +27,7 @@ void HistoryDialog::createModels()
     comTableModel = new QSqlTableModel(this);
     comItemSelModel = new QItemSelectionModel(comTableModel);
     comTableModel->setTable("company");
+    comTableModel->setFilter(dateFilter);
     comTableModel->setHeaderData(Company_Name, Qt::Horizontal, "公司");
     comTableModel->setHeaderData(Company_Start_Date, Qt::Horizontal, "建立日期");
     comTableModel->setHeaderData(Company_End_Date, Qt::Horizontal, "关闭日期");
@@ -40,6 +41,7 @@ void HistoryDialog::createModels()
     proTableModel = new QSqlRelationalTableModel(this);
     proItemSelModel = new QItemSelectionModel(proTableModel);
     proTableModel->setTable("project");
+    proTableModel->setFilter(dateFilter);
     proTableModel->setRelation(Project_Company_Id, QSqlRelation("company", "id", "comName"));
     proTableModel->setHeaderData(Project_Company_Id, Qt::Horizontal, "公司");
     proTableModel->setHeaderData(Project_Name, Qt::Horizontal, "项目部/机关");
@@ -56,6 +58,7 @@ void HistoryDialog::createModels()
     empTableModel = new QSqlRelationalTableModel(this);
     empItemSelModel = new QItemSelectionModel(empTableModel);
     empTableModel->setTable("employee_history");
+    empTableModel->setFilter(dateFilter);
     empTableModel->setRelation(Employee_Project_Id, QSqlRelation("project", "id", "proName"));
     empTableModel->setRelation(Employee_Role_Id, QSqlRelation("role", "id", "rolName"));
     empTableModel->setHeaderData(Employee_Project_Id, Qt::Horizontal, "项目/机关");
@@ -75,7 +78,6 @@ void HistoryDialog::createModels()
 
 void HistoryDialog::updateCompanyModel()
 {
-    comTableModel->setFilter(dateFilter);
     comTableModel->select();
     ui->comTableView->resizeColumnsToContents();
 
@@ -84,7 +86,6 @@ void HistoryDialog::updateCompanyModel()
 
 void HistoryDialog::updateProjectModel()
 {
-    proTableModel->setFilter(dateFilter);
     proTableModel->select();
     ui->proTableView->resizeColumnsToContents();
 
@@ -93,7 +94,6 @@ void HistoryDialog::updateProjectModel()
 
 void HistoryDialog::updateEmployeeModel()
 {
-    empTableModel->setFilter(dateFilter);
     empTableModel->select();
     ui->empTableView->resizeColumnsToContents();
 

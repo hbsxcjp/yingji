@@ -83,19 +83,19 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <property name="spacing">
-           <number>2</number>
+           <number>6</number>
           </property>
           <property name="leftMargin">
-           <number>2</number>
+           <number>0</number>
           </property>
           <property name="topMargin">
-           <number>2</number>
+           <number>0</number>
           </property>
           <property name="rightMargin">
-           <number>2</number>
+           <number>0</number>
           </property>
           <property name="bottomMargin">
-           <number>2</number>
+           <number>0</number>
           </property>
           <item>
            <spacer name="horizontalSpacer">
@@ -286,19 +286,19 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <property name="spacing">
-           <number>2</number>
+           <number>6</number>
           </property>
           <property name="leftMargin">
-           <number>2</number>
+           <number>0</number>
           </property>
           <property name="topMargin">
-           <number>2</number>
+           <number>0</number>
           </property>
           <property name="rightMargin">
-           <number>2</number>
+           <number>0</number>
           </property>
           <property name="bottomMargin">
-           <number>2</number>
+           <number>0</number>
           </property>
           <item>
            <widget class="QCheckBox" name="showCompanyBox">
@@ -341,6 +341,9 @@
             </property>
             <property name="text">
              <string>查找：</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -578,19 +581,19 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <property name="spacing">
-           <number>2</number>
+           <number>6</number>
           </property>
           <property name="leftMargin">
-           <number>2</number>
+           <number>0</number>
           </property>
           <property name="topMargin">
-           <number>2</number>
+           <number>0</number>
           </property>
           <property name="rightMargin">
-           <number>2</number>
+           <number>0</number>
           </property>
           <property name="bottomMargin">
-           <number>2</number>
+           <number>0</number>
           </property>
           <item>
            <widget class="QCheckBox" name="showProjectBox">
@@ -630,6 +633,9 @@
             </property>
             <property name="text">
              <string>查找：姓名</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -701,6 +707,9 @@
             </property>
             <property name="text">
              <string>     电话号码 </string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -907,7 +916,7 @@
      <x>0</x>
      <y>0</y>
      <width>1036</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_F">
