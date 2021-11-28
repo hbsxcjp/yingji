@@ -38,6 +38,7 @@ private slots:
     void on_comSelectBox_clicked(bool checked);
     void on_proSelectBox_clicked(bool checked);
     void on_empSelectBox_clicked(bool checked);
+
     void on_proLineClearButton_clicked();
     void on_nameLineClearButton_clicked();
     void on_telLineClearButton_clicked();
@@ -53,10 +54,9 @@ private:
     void updateProjectModel();
     void updateEmployeeModel();
 
-    QString getSelectionFilterString(const QSqlTableModel* tableModel,
-        const QItemSelectionModel* itemSelectionModel);
-    QString getKeysFilterString(const QString& text, const QString& regStr, const QString& fieldName);
-    QString& toLineString(QString& str);
+    void deleteEmployees(const QString& filter);
+    void deleteProjects(const QString& filter);
+
     void copyGridToClipboard();
     void copyTreeToClipboard();
 

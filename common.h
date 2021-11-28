@@ -37,7 +37,8 @@ enum {
     Project_Company_Id,
     Project_Name,
     Project_Start_Date,
-    Project_End_Date
+    Project_End_Date,
+    Project_AtWork
 };
 
 enum {
@@ -50,5 +51,20 @@ enum {
     Employee_Start_Date,
     Employee_End_Date
 };
+
+namespace Common {
+
+QString getSelectionIdFilter(const QSqlTableModel* tableModel, const QItemSelectionModel* itemSelectionModel);
+
+QString getKeysFilter(QString text, const QString& regStr, const QString& fieldName);
+
+QString& toLineString(QString& str);
+
+QString getFieldNames(const QSqlTableModel* tableModel,
+    const QItemSelectionModel* itemSelectionModel, const QString& field);
+
+}
+
+extern const QString dateFormat;
 
 #endif // COMMON_H

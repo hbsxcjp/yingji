@@ -21,6 +21,8 @@ private slots:
     void on_delButton_clicked();
     void on_restoreButton_clicked();
 
+    void on_tabWidget_currentChanged(int index);
+
 private:
     void createModels();
     void updateCompanyModel();
@@ -43,7 +45,5 @@ private:
 
     Ui::HistoryDialog* ui;
 };
-
-extern const QString dateFormat;
 
 #endif // HISTORYDIALOG_H

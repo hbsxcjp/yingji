@@ -35,7 +35,7 @@ void MainWindow::createModelViews()
     comTableModel = new QSqlTableModel(this);
     comItemSelModel = new QItemSelectionModel(comTableModel);
     comTableModel->setTable("company");
-    comTableModel->setFilter("end_date IS NULL ");
+    comTableModel->setFilter("end_date IS NULL");
     comTableModel->setSort(Company_Id, Qt::SortOrder::AscendingOrder);
     comTableModel->setHeaderData(Company_Name, Qt::Horizontal, "公司");
     comTableModel->setEditStrategy(QSqlTableModel::EditStrategy::OnFieldChange);
@@ -63,6 +63,7 @@ void MainWindow::createModelViews()
     ui->proTableView->hideColumn(Project_Id);
     ui->proTableView->hideColumn(Project_Start_Date);
     ui->proTableView->hideColumn(Project_End_Date);
+    ui->proTableView->hideColumn(Project_AtWork);
     ui->proTableView->addAction(ui->actionCopy);
     connect(proItemSelModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
         this, SLOT(on_proItemSelectionChanged()));
@@ -85,7 +86,6 @@ void MainWindow::createModelViews()
     ui->empTableView->setItemDelegate(new QSqlRelationalDelegate(ui->empTableView));
     ui->empTableView->hideColumn(Employee_Id);
     ui->empTableView->hideColumn(Employee_Start_Date);
-    ui->empTableView->hideColumn(Employee_End_Date);
     ui->empTableView->addAction(ui->actionCopy);
     connect(empItemSelModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
         this, SLOT(on_empItemSelectionChanged()));
@@ -103,18 +103,21 @@ void MainWindow::createModelViews()
 void MainWindow::updateCompanyModel()
 {
     comTableModel->select();
-    ui->proTableView->resizeColumnsToContents();
+    ui->comTableView->resizeColumnsToContents();
 }
 
 void MainWindow::updateProjectModel()
 {
     // 项目部模型和视图更新
-    QString sql { "end_date IS NULL AND "
-        + getSelectionFilterString(comTableModel, comItemSelModel)
-        + getKeysFilterString(ui->proLineEdit->text(), "\\W+", "proName") };
-    printf((sql + '\n').toUtf8());
+    QStringList sql {
+        //        "end_date IS NULL ", // 该字段筛选疑似与外键查询有冲突，不起作用
+        "atWork = 1 ",
+        "company_id " + Common::getSelectionIdFilter(comTableModel, comItemSelModel),
+        Common::getKeysFilter(ui->proLineEdit->text(), "\\W+", "proName")
+    };
+    //    printf((sql + '\n').toUtf8());
 
-    proTableModel->setFilter(sql);
+    proTableModel->setFilter(sql.join("AND "));
     proTableModel->select();
     ui->proTableView->resizeColumnsToContents();
 }
@@ -122,45 +125,38 @@ void MainWindow::updateProjectModel()
 void MainWindow::updateEmployeeModel()
 {
     // 人员模型和视图更新
-    QString sql { getSelectionFilterString(proTableModel, proItemSelModel)
-        + getKeysFilterString(ui->empLineEdit->text(), "\\W+", "empName")
-        + getKeysFilterString(ui->telLineEdit->text(), "\\D+", "telephone") };
+    QStringList sql {
+        "project_id " + Common::getSelectionIdFilter(proTableModel, proItemSelModel),
+        Common::getKeysFilter(ui->empLineEdit->text(), "\\W+", "empName"),
+        Common::getKeysFilter(ui->telLineEdit->text(), "\\D+", "telephone")
+    };
     //    printf((sql + '\n').toUtf8());
 
-    empTableModel->setFilter(sql);
+    empTableModel->setFilter(sql.join("AND "));
     empTableModel->select();
     ui->empTableView->resizeColumnsToContents();
 }
 
-QString MainWindow::getSelectionFilterString(const QSqlTableModel* tableModel,
-    const QItemSelectionModel* itemSelectionModel)
+void MainWindow::deleteEmployees(const QString& filter)
 {
-    QString sql { QString("%1_id ").arg(tableModel->tableName()) };
-    auto indexList = itemSelectionModel->selectedRows();
-    if (!indexList.isEmpty()) {
-        sql.append("IN (");
-        for (auto& index : indexList)
-            sql.append(QString("%1,").arg(tableModel->record(index.row()).value("id").toInt()));
-        sql.remove(sql.size() - 1, 1).append(") ");
-    } else
-        sql.append("= -1 ");
-
-    return sql;
+    QSqlQuery query;
+    // 存储人员历史记录
+    query.exec(QString("INSERT INTO employee_history "
+                       "(project_id, role_id, empName, depart_position, telephone, start_date, end_date) "
+                       "SELECT project_id, role_id, empName, depart_position, telephone, start_date, '%1' "
+                       "FROM employee WHERE %2;")
+                   .arg(QDate::currentDate().toString(dateFormat))
+                   .arg(filter));
+    // 删除人员记录
+    query.exec(QString("DELETE FROM employee WHERE %1;").arg(filter));
 }
 
-QString MainWindow::getKeysFilterString(const QString& text, const QString& regStr, const QString& fieldName)
+void MainWindow::deleteProjects(const QString& filter)
 {
-    QString sql;
-    auto filterStrList = text.split(QRegExp(regStr), QString::SkipEmptyParts);
-    if (!filterStrList.isEmpty())
-        sql.append(QString("AND %1 LIKE '\%%2\%' ").arg(fieldName).arg(filterStrList.join('\%')));
-
-    return sql;
-}
-
-QString& MainWindow::toLineString(QString& str)
-{
-    return str.replace(QRegExp("[\n\t]+"), " ");
+    // 删除项目记录
+    QSqlQuery query(QString("UPDATE project SET end_date = '%1', atWork = 0 WHERE %2;")
+                        .arg(QDate::currentDate().toString(dateFormat))
+                        .arg(filter));
 }
 
 void MainWindow::copyGridToClipboard()
@@ -184,12 +180,12 @@ void MainWindow::copyGridToClipboard()
         auto telephone = record.value(Employee_Telephone).toString();
         text.append(QString("%1\t%2\t%3\t%4\t%5\t%6\t%7\n")
                         .arg(++rowid)
-                        .arg(toLineString(proComNameMap[proName]))
-                        .arg(toLineString(proName))
-                        .arg(toLineString(rolName))
-                        .arg(toLineString(empName))
-                        .arg(toLineString(depart_position))
-                        .arg(toLineString(telephone)));
+                        .arg(Common::toLineString(proComNameMap[proName]))
+                        .arg(Common::toLineString(proName))
+                        .arg(Common::toLineString(rolName))
+                        .arg(Common::toLineString(empName))
+                        .arg(Common::toLineString(depart_position))
+                        .arg(Common::toLineString(telephone)));
     }
 
     QApplication::clipboard()->setText(text);
@@ -210,7 +206,7 @@ void MainWindow::copyTreeToClipboard()
                 comName = record.value(Project_Company_Id).toString();
         comproNames.append(comName + '^' + proName);
     }
-    std::sort(comproNames.begin(), comproNames.end()); //以公司名称排序
+    std::sort(comproNames.begin(), comproNames.end()); //以公司、项目部名称排序
     QList<QStringList> comproNamesList;
     for (auto& comproName : comproNames)
         comproNamesList.append(comproName.split('^'));
@@ -221,7 +217,7 @@ void MainWindow::copyTreeToClipboard()
         proNameEmpRows.append(record.value(Employee_Project_Id).toString()
             + '^' + QString::number(index.row()));
     }
-    std::sort(proNameEmpRows.begin(), proNameEmpRows.end()); //以项目部名称排序
+    std::sort(proNameEmpRows.begin(), proNameEmpRows.end()); //以项目部名称、人员序号排序
     QList<QStringList> proNameEmpRowsList;
     for (auto& proNameEmpRow : proNameEmpRows)
         proNameEmpRowsList.append(proNameEmpRow.split('^'));
@@ -232,7 +228,7 @@ void MainWindow::copyTreeToClipboard()
         QString comName = comNameList.at(comIndex);
         text.append(QString("%1── %2\n")
                         .arg(comIsLast ? "└" : "├")
-                        .arg(toLineString(comName)));
+                        .arg(Common::toLineString(comName)));
 
         for (int proIndex = 0; proIndex < comproNamesList.count(); ++proIndex) {
             if (comName != comproNamesList[proIndex][0])
@@ -244,7 +240,7 @@ void MainWindow::copyTreeToClipboard()
             text.append(QString("%1   %2── %3\n")
                             .arg(comIsLast ? " " : "│")
                             .arg(proIsLast ? "└" : "├")
-                            .arg(toLineString(proName)));
+                            .arg(Common::toLineString(proName)));
             for (int empIndex = 0; empIndex < proNameEmpRowsList.count(); ++empIndex) {
                 if (proName != proNameEmpRowsList[empIndex][0])
                     continue;
@@ -260,10 +256,10 @@ void MainWindow::copyTreeToClipboard()
                                 .arg(comIsLast ? " " : "│")
                                 .arg(proIsLast ? " " : "│")
                                 .arg(rowIsLast ? "└" : "├")
-                                .arg(toLineString(rolName))
-                                .arg(toLineString(empName))
-                                .arg(toLineString(depart_position))
-                                .arg(toLineString(telephone)));
+                                .arg(Common::toLineString(rolName))
+                                .arg(Common::toLineString(empName))
+                                .arg(Common::toLineString(depart_position))
+                                .arg(Common::toLineString(telephone)));
             }
         }
     }
@@ -312,7 +308,7 @@ void MainWindow::on_comItemSelectionChanged()
             ? Qt::CheckState::Unchecked
             : (selCount == rowCount ? Qt::CheckState::Checked : Qt::CheckState::PartiallyChecked));
     ui->comLabel->setText(QString("选择 <font color=red><B>%1</B></font> 个")
-                              .arg(comItemSelModel->selectedRows().count()));
+                              .arg(selCount));
     ui->comDelButton->setEnabled(comItemSelModel->hasSelection());
     ui->proAddButton->setEnabled(comItemSelModel->hasSelection());
 
@@ -352,53 +348,51 @@ void MainWindow::on_empItemSelectionChanged()
 
 void MainWindow::on_comDelButton_clicked()
 {
-    auto selIndexList = comItemSelModel->selectedRows();
-    for (auto& index : selIndexList) {
-        QSqlDatabase::database().transaction(); // 启动事务
-        bool isReal = true;
-        QSqlRecord record = comTableModel->record(index.row());
-        int comId = record.value(Company_Id).toInt();
-        QSqlQuery query_p(QString("SELECT id, company_id, proName FROM project "
-                                  "WHERE company_id = %1")
-                              .arg(comId)),
-            query_e;
-        while (query_p.next()) {
-            int proId = query_p.value(Project_Id).toInt();
-            int result = QMessageBox::warning(this, "删除项目部",
-                QString("确定删除 ‘%1’ 及所属的全部人员吗？").arg(query_p.value(Project_Name).toString()),
-                QMessageBox::Yes | QMessageBox::No);
-            if (result == QMessageBox::No) {
-                QSqlDatabase::database().rollback();
-                isReal = false;
-                break;
-            }
+    int result = QMessageBox::warning(this, "删除公司",
+        QString("是否删除公司:\n%1\n\n")
+            .arg(Common::getFieldNames(comTableModel, comItemSelModel, "comName")),
+        QMessageBox::Yes | QMessageBox::No);
+    if (result == QMessageBox::No)
+        return;
 
-            // 存储人员历史记录
-            query_e.exec(QString("INSERT INTO employee_history "
-                                 "(project_id, role_id, empName, depart_position, telephone, start_date, end_date) "
-                                 "SELECT project_id, role_id, empName, depart_position, telephone, start_date, '%1' "
-                                 "FROM employee WHERE project_id = %2;")
-                             .arg(QDate::currentDate().toString(dateFormat))
-                             .arg(proId));
-            // 删除人员记录
-            query_e.exec(QString("DELETE FROM employee WHERE project_id = %1;").arg(proId));
-
-            // 删除项目记录
-            query_e.exec(QString("UPDATE project SET end_date = %1 WHERE id = %2;")
-                             .arg(QDate::currentDate().toString(dateFormat))
-                             .arg(proId));
+    QSqlQuery query, query_e;
+    QString filter { Common::getSelectionIdFilter(comTableModel, comItemSelModel) };
+    QSqlDatabase::database().transaction(); // 启动事务
+    query.exec(QString("SELECT * FROM project "
+                       "WHERE company_id %1 AND atWork = 1;")
+                   .arg(filter));
+    while (query.next()) {
+        int proId = query.value(Project_Id).toInt();
+        QString proName = query.value(Project_Name).toString();
+        query_e.exec(QString("SELECT COUNT(*) FROM employee "
+                             "WHERE project_id = %1;")
+                         .arg(proId));
+        int num = 0;
+        if (query_e.next())
+            num = query_e.value(Employee_Id).toInt();
+        int result = QMessageBox::warning(this, "删除公司",
+            QString("删除公司的同时，也需要删除所属的项目部/机关:\n%1\n\n"
+                    "及所属的 %2 名人员信息。")
+                .arg(proName)
+                .arg(num),
+            QMessageBox::Yes | QMessageBox::No);
+        if (result == QMessageBox::No) {
+            QSqlDatabase::database().rollback();
+            return;
         }
 
-        if (!isReal)
-            continue;
-
-        // 删除公司历史记录
-        query_e.exec(QString("UPDATE company SET end_date = %1 WHERE id = %2;")
-                         .arg(QDate::currentDate().toString(dateFormat))
-                         .arg(comId));
-        comTableModel->submitAll();
-        QSqlDatabase::database().commit(); // 提交事务
+        // 删除人员
+        deleteEmployees(QString("project_id = %1").arg(proId));
+        // 删除项目部
+        deleteProjects(QString("id = %1").arg(proId));
     }
+
+    // 删除公司
+    query.exec(QString("UPDATE company SET end_date = '%1' "
+                       "WHERE id %2;")
+                   .arg(QDate::currentDate().toString(dateFormat))
+                   .arg(filter));
+    QSqlDatabase::database().commit(); // 提交事务
 
     updateCompanyModel();
     on_comItemSelectionChanged();
@@ -419,49 +413,38 @@ void MainWindow::on_comAddButton_clicked()
 
 void MainWindow::on_proDelButton_clicked()
 {
-    auto selIndexList = proItemSelModel->selectedRows();
-    for (auto& index : selIndexList) {
-        QSqlDatabase::database().transaction(); // 启动事务
-        QSqlRecord record = proTableModel->record(index.row());
-        int proId = record.value(Project_Id).toInt();
-        int numEmployee = 0;
-        QSqlQuery query(QString("SELECT COUNT(*) FROM employee "
-                                "WHERE project_id = %1")
-                            .arg(proId));
-        if (query.next())
-            numEmployee = query.value(0).toInt();
-        if (numEmployee > 0) {
-            int result = QMessageBox::warning(this, "删除项目部",
-                QString("确定删除 ‘%1’ 及所属的 %2 名人员吗？")
-                    .arg(record.value(Project_Name).toString())
-                    .arg(numEmployee),
-                QMessageBox::Yes | QMessageBox::No);
-            if (result == QMessageBox::No) {
-                QSqlDatabase::database().rollback();
-                continue;
-            }
+    int result = QMessageBox::warning(this, "删除项目部/机关",
+        QString("是否删除项目部/机关:\n%1\n\n")
+            .arg(Common::getFieldNames(proTableModel, proItemSelModel, "proName")),
+        QMessageBox::Yes | QMessageBox::No);
+    if (result == QMessageBox::No)
+        return;
 
-            // 存储人员历史记录
-            query.exec(QString("INSERT INTO employee_history "
-                               "(project_id, role_id, empName, depart_position, telephone, start_date, end_date) "
-                               "SELECT project_id, role_id, empName, depart_position, telephone, start_date, '%1' "
-                               "FROM employee WHERE project_id = %2;")
-                           .arg(QDate::currentDate().toString(dateFormat))
-                           .arg(proId));
-            // 删除人员记录
-            query.exec(QString("DELETE FROM employee "
-                               "WHERE project_id = %1;")
-                           .arg(proId));
+    QSqlQuery query;
+    QString filter { Common::getSelectionIdFilter(proTableModel, proItemSelModel) };
+    int num = 0;
+    QSqlDatabase::database().transaction(); // 启动事务
+    query.exec(QString("SELECT COUNT(*) FROM employee "
+                       "WHERE project_id %1;")
+                   .arg(filter));
+    if (query.next())
+        num = query.value(0).toInt();
+    if (num > 0) {
+        int result = QMessageBox::warning(this, "删除项目部/机关",
+            QString("删除项目部/机关的同时，也需要删除所属的 %1 名人员信息。\n\n")
+                .arg(num),
+            QMessageBox::Yes | QMessageBox::No);
+        if (result == QMessageBox::No) {
+            QSqlDatabase::database().rollback();
+            return;
         }
 
-        // 删除项目记录
-        query.exec(QString("UPDATE project SET end_date = %1 WHERE id = %2;")
-                       .arg(QDate::currentDate().toString(dateFormat))
-                       .arg(proId));
-
-        proTableModel->submitAll();
-        QSqlDatabase::database().commit(); // 提交事务
+        // 删除人员
+        deleteEmployees("project_id " + filter);
     }
+    // 删除项目部
+    deleteProjects("id " + filter);
+    QSqlDatabase::database().commit(); // 提交事务
 
     on_comItemSelectionChanged();
     ui->proTableView->setFocus();
@@ -469,8 +452,8 @@ void MainWindow::on_proDelButton_clicked()
 
 void MainWindow::on_proAddButton_clicked()
 {
-    auto selIndexList = comItemSelModel->selectedRows();
     proTableModel->relationModel(Project_Company_Id)->select(); // 刷新公司列表
+    auto selIndexList = comItemSelModel->selectedRows();
     int row = proTableModel->rowCount();
     proTableModel->insertRow(row);
     proTableModel->setData(proTableModel->index(row, Project_Company_Id),
@@ -485,29 +468,16 @@ void MainWindow::on_proAddButton_clicked()
 
 void MainWindow::on_empDelButton_clicked()
 {
-    auto selIndexList = empItemSelModel->selectedRows();
-    for (auto& index : selIndexList) {
-        QSqlDatabase::database().transaction(); // 启动事务
-        QSqlRecord record = empTableModel->record(index.row());
-        int result = QMessageBox::warning(this, "删除人员",
-            QString("确定删除 ‘%1’ 吗？").arg(record.value(Employee_Name).toString()),
-            QMessageBox::Yes | QMessageBox::No);
-        if (result == QMessageBox::No) {
-            QSqlDatabase::database().rollback();
-            return;
-        }
+    int result = QMessageBox::warning(this, "删除人员",
+        QString("确定删除人员: \n%1\n\n 吗？")
+            .arg(Common::getFieldNames(empTableModel, empItemSelModel, "empName")),
+        QMessageBox::Yes | QMessageBox::No);
+    if (result == QMessageBox::No)
+        return;
 
-        // 存储人员历史记录
-        QSqlQuery query(QString("INSERT INTO employee_history "
-                                "(project_id, role_id, empName, depart_position, telephone, start_date, end_date) "
-                                "SELECT project_id, role_id, empName, depart_position, telephone, start_date, '%1' "
-                                "FROM employee WHERE id = %2;")
-                            .arg(QDate::currentDate().toString(dateFormat))
-                            .arg(record.value(Employee_Id).toInt()));
-        empTableModel->removeRow(index.row());
-        empTableModel->submitAll();
-        QSqlDatabase::database().commit(); // 提交事务
-    }
+    QSqlDatabase::database().transaction(); // 启动事务
+    deleteEmployees("id " + Common::getSelectionIdFilter(empTableModel, empItemSelModel));
+    QSqlDatabase::database().commit(); // 提交事务
 
     on_proItemSelectionChanged();
     ui->empTableView->setFocus();
@@ -515,8 +485,8 @@ void MainWindow::on_empDelButton_clicked()
 
 void MainWindow::on_empAddButton_clicked()
 {
-    auto selIndexList = proItemSelModel->selectedRows();
     empTableModel->relationModel(Employee_Project_Id)->select(); //刷新项目部列表
+    auto selIndexList = proItemSelModel->selectedRows();
     int row = empTableModel->rowCount();
     empTableModel->insertRow(row);
     empTableModel->setData(empTableModel->index(row, Employee_Project_Id),
@@ -580,7 +550,7 @@ void MainWindow::on_proSelectBox_clicked(bool checked)
 {
     if (checked) {
         auto topLeft = proTableModel->index(0, 0),
-             bottomRight = proTableModel->index(proTableModel->rowCount() - 1, Project_End_Date);
+             bottomRight = proTableModel->index(proTableModel->rowCount() - 1, Project_AtWork);
         itemSelection.select(topLeft, bottomRight);
         proItemSelModel->select(itemSelection, QItemSelectionModel::Select);
     } else
@@ -591,7 +561,7 @@ void MainWindow::on_empSelectBox_clicked(bool checked)
 {
     if (checked) {
         auto topLeft = empTableModel->index(0, 0),
-             bottomRight = empTableModel->index(empTableModel->rowCount() - 1, Employee_End_Date);
+             bottomRight = empTableModel->index(empTableModel->rowCount() - 1, Employee_Start_Date);
         itemSelection.select(topLeft, bottomRight);
         empItemSelModel->select(itemSelection, QItemSelectionModel::Select);
     } else
@@ -623,18 +593,6 @@ void MainWindow::on_actionCopy_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    // 修改数据库内容
-    //    QSqlQuery query, updateQuery;
-    //    query.exec("select id, old_id from project_1;");
-    //    if (query.first()) {
-    //        do {
-    //            updateQuery.exec(QString("update employee set project_1_id = %1 "
-    //                                     "where project_id = %2;")
-    //                                 .arg(query.value(0).toInt())
-    //                                 .arg(query.value(1).toInt()));
-    //        } while (query.next());
-    //    }
-
     QMessageBox::about(this, "关于本应用",
         QString("分包应急小组体系通讯录，\n仅限内部使用。\n\n\n经营管理部\n2021.11.20"));
 }
