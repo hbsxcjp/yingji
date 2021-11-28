@@ -8,9 +8,7 @@ HistoryDialog::HistoryDialog(QWidget* parent)
     ui->setupUi(this);
 
     createModels();
-    updateCompanyModel();
-    updateProjectModel();
-    updateEmployeeModel();
+    on_tabWidget_currentChanged(0);
 }
 
 HistoryDialog::~HistoryDialog()
@@ -111,7 +109,7 @@ void HistoryDialog::delCompany()
     QString filter { Common::getSelectionIdFilter(comTableModel, comItemSelModel) };
     int num = 0;
     QSqlDatabase::database().transaction(); // 启动事务
-    query.exec(QString("SELECT id FROM project "
+    query.exec(QString("SELECT COUNT(*) FROM project "
                        "WHERE company_id %1;")
                    .arg(filter));
     if (query.next())
@@ -321,6 +319,15 @@ void HistoryDialog::on_restoreButton_clicked()
 void HistoryDialog::on_tabWidget_currentChanged(int index)
 {
     Q_UNUSED(index);
-
-    setButtonEnabled();
+    switch (ui->tabWidget->currentIndex()) {
+    case 0:
+        updateCompanyModel();
+        break;
+    case 1:
+        updateProjectModel();
+        break;
+    default:
+        updateEmployeeModel();
+        break;
+    }
 }
