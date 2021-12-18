@@ -36,12 +36,13 @@ void MainWindow::createModelViews()
     comItemSelModel = new QItemSelectionModel(comTableModel);
     comTableModel->setTable("company");
     comTableModel->setFilter("end_date IS NULL");
-    comTableModel->setSort(Company_Id, Qt::SortOrder::AscendingOrder);
+    comTableModel->setSort(Company_Sort_Id, Qt::SortOrder::AscendingOrder);
     comTableModel->setHeaderData(Company_Name, Qt::Horizontal, "公司");
     comTableModel->setEditStrategy(QSqlTableModel::EditStrategy::OnFieldChange);
     ui->comTableView->setModel(comTableModel);
     ui->comTableView->setSelectionModel(comItemSelModel);
     ui->comTableView->hideColumn(Company_Id);
+    ui->comTableView->hideColumn(Company_Sort_Id);
     ui->comTableView->hideColumn(Company_Start_Date);
     ui->comTableView->hideColumn(Company_End_Date);
     ui->comTableView->addAction(ui->actionCopy);
@@ -52,7 +53,7 @@ void MainWindow::createModelViews()
     proTableModel = new QSqlRelationalTableModel(this);
     proItemSelModel = new QItemSelectionModel(proTableModel);
     proTableModel->setTable("project");
-    proTableModel->setSort(Project_Id, Qt::SortOrder::AscendingOrder);
+    proTableModel->setSort(Project_Sort_Id, Qt::SortOrder::AscendingOrder);
     proTableModel->setRelation(Project_Company_Id, QSqlRelation("company", "id", "comName"));
     proTableModel->setHeaderData(Project_Company_Id, Qt::Horizontal, "公司");
     proTableModel->setHeaderData(Project_Name, Qt::Horizontal, "项目部/机关");
@@ -61,6 +62,7 @@ void MainWindow::createModelViews()
     ui->proTableView->setSelectionModel(proItemSelModel);
     ui->proTableView->setItemDelegate(new QSqlRelationalDelegate(ui->proTableView));
     ui->proTableView->hideColumn(Project_Id);
+    ui->proTableView->hideColumn(Project_Sort_Id);
     ui->proTableView->hideColumn(Project_Start_Date);
     ui->proTableView->hideColumn(Project_End_Date);
     ui->proTableView->hideColumn(Project_AtWork);
@@ -72,7 +74,7 @@ void MainWindow::createModelViews()
     empTableModel = new QSqlRelationalTableModel(this);
     empItemSelModel = new QItemSelectionModel(empTableModel);
     empTableModel->setTable("employee");
-    empTableModel->setSort(Employee_Id, Qt::SortOrder::AscendingOrder);
+    empTableModel->setSort(Employee_Sort_Id, Qt::SortOrder::AscendingOrder);
     empTableModel->setRelation(Employee_Project_Id, QSqlRelation("project", "id", "proName"));
     empTableModel->setRelation(Employee_Role_Id, QSqlRelation("role", "id", "rolName"));
     empTableModel->setHeaderData(Employee_Project_Id, Qt::Horizontal, "项目/机关");
@@ -85,6 +87,7 @@ void MainWindow::createModelViews()
     ui->empTableView->setSelectionModel(empItemSelModel);
     ui->empTableView->setItemDelegate(new QSqlRelationalDelegate(ui->empTableView));
     ui->empTableView->hideColumn(Employee_Id);
+    ui->empTableView->hideColumn(Employee_Sort_Id);
     ui->empTableView->hideColumn(Employee_Start_Date);
     ui->empTableView->addAction(ui->actionCopy);
     connect(empItemSelModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
@@ -139,11 +142,11 @@ void MainWindow::updateEmployeeModel()
 
 void MainWindow::deleteEmployees(const QString& filter)
 {
-    QSqlQuery query;
     // 存储人员历史记录
+    QSqlQuery query;
     query.exec(QString("INSERT INTO employee_history "
-                       "(project_id, role_id, empName, depart_position, telephone, start_date, end_date) "
-                       "SELECT project_id, role_id, empName, depart_position, telephone, start_date, '%1' "
+                       "(sort_id, project_id, role_id, empName, depart_position, telephone, start_date, end_date) "
+                       "SELECT sort_id, project_id, role_id, empName, depart_position, telephone, start_date, '%1' "
                        "FROM employee WHERE %2;")
                    .arg(QDate::currentDate().toString(dateFormat))
                    .arg(filter));
@@ -154,9 +157,10 @@ void MainWindow::deleteEmployees(const QString& filter)
 void MainWindow::deleteProjects(const QString& filter)
 {
     // 删除项目记录
-    QSqlQuery query(QString("UPDATE project SET end_date = '%1', atWork = 0 WHERE %2;")
-                        .arg(QDate::currentDate().toString(dateFormat))
-                        .arg(filter));
+    QSqlQuery query;
+    query.exec(QString("UPDATE project SET end_date = '%1', atWork = 0 WHERE %2;")
+                   .arg(QDate::currentDate().toString(dateFormat))
+                   .arg(filter));
 }
 
 void MainWindow::copyGridToClipboard()
@@ -310,6 +314,10 @@ void MainWindow::on_comItemSelectionChanged()
     ui->comLabel->setText(QString("选择 <font color=red><B>%1</B></font> 个")
                               .arg(selCount));
     ui->comDelButton->setEnabled(comItemSelModel->hasSelection());
+    ui->comDownButton->setEnabled(selCount == 1
+        && comItemSelModel->selectedRows().at(0).row() != rowCount - 1);
+    ui->comUpButton->setEnabled(selCount == 1
+        && comItemSelModel->selectedRows().at(0).row() != 0);
     ui->proAddButton->setEnabled(comItemSelModel->hasSelection());
 
     updateProjectModel();
@@ -327,6 +335,10 @@ void MainWindow::on_proItemSelectionChanged()
                               .arg(rowCount)
                               .arg(selCount));
     ui->proDelButton->setEnabled(proItemSelModel->hasSelection());
+    ui->proDownButton->setEnabled(selCount == 1
+        && proItemSelModel->selectedRows().at(0).row() != rowCount - 1);
+    ui->proUpButton->setEnabled(selCount == 1
+        && proItemSelModel->selectedRows().at(0).row() != 0);
     ui->empAddButton->setEnabled(proItemSelModel->hasSelection());
 
     updateEmployeeModel();
@@ -344,12 +356,16 @@ void MainWindow::on_empItemSelectionChanged()
                               .arg(rowCount)
                               .arg(selCount));
     ui->empDelButton->setEnabled(empItemSelModel->hasSelection());
+    ui->empDownButton->setEnabled(selCount == 1
+        && empItemSelModel->selectedRows().at(0).row() != rowCount - 1);
+    ui->empUpButton->setEnabled(selCount == 1
+        && empItemSelModel->selectedRows().at(0).row() != 0);
 }
 
 void MainWindow::on_comDelButton_clicked()
 {
     int result = QMessageBox::warning(this, "删除公司",
-        QString("是否删除公司:\n%1\n\n")
+        QString("是否删除公司:\n\"%1\"\n")
             .arg(Common::getFieldNames(comTableModel, comItemSelModel, "comName")),
         QMessageBox::Yes | QMessageBox::No);
     if (result == QMessageBox::No)
@@ -371,7 +387,7 @@ void MainWindow::on_comDelButton_clicked()
         if (query_e.next())
             num = query_e.value(Employee_Id).toInt();
         int result = QMessageBox::warning(this, "删除公司",
-            QString("删除公司的同时，也需要删除所属的项目部/机关:\n%1\n\n"
+            QString("删除公司的同时，也需要删除所属的项目部/机关:\n\"%1\"\n"
                     "及所属的 %2 名人员信息。")
                 .arg(proName)
                 .arg(num),
@@ -403,6 +419,8 @@ void MainWindow::on_comAddButton_clicked()
 {
     int row = comTableModel->rowCount();
     comTableModel->insertRow(row);
+    comTableModel->setData(comTableModel->index(row, Company_Sort_Id),
+        comTableModel->index(row, Company_Id).data());
     comTableModel->setData(comTableModel->index(row, Company_Start_Date),
         QDate::currentDate().toString(dateFormat));
 
@@ -411,18 +429,30 @@ void MainWindow::on_comAddButton_clicked()
     ui->comTableView->edit(index);
 }
 
+void MainWindow::on_comDownButton_clicked()
+{
+    int row = Common::moveRecord(comTableModel, comItemSelModel, true);
+    ui->comTableView->setCurrentIndex(comTableModel->index(row, Company_Name));
+}
+
+void MainWindow::on_comUpButton_clicked()
+{
+    int row = Common::moveRecord(comTableModel, comItemSelModel, false);
+    ui->comTableView->setCurrentIndex(comTableModel->index(row, Company_Name));
+}
+
 void MainWindow::on_proDelButton_clicked()
 {
     int result = QMessageBox::warning(this, "删除项目部/机关",
-        QString("是否删除项目部/机关:\n%1\n\n")
+        QString("是否删除项目部/机关:\n\"%1\"\n")
             .arg(Common::getFieldNames(proTableModel, proItemSelModel, "proName")),
         QMessageBox::Yes | QMessageBox::No);
     if (result == QMessageBox::No)
         return;
 
-    QSqlQuery query;
     QString filter { Common::getSelectionIdFilter(proTableModel, proItemSelModel) };
     int num = 0;
+    QSqlQuery query;
     QSqlDatabase::database().transaction(); // 启动事务
     query.exec(QString("SELECT COUNT(*) FROM employee "
                        "WHERE project_id %1;")
@@ -456,6 +486,8 @@ void MainWindow::on_proAddButton_clicked()
     auto selIndexList = comItemSelModel->selectedRows();
     int row = proTableModel->rowCount();
     proTableModel->insertRow(row);
+    proTableModel->setData(proTableModel->index(row, Project_Sort_Id),
+        proTableModel->index(row, Project_Id).data());
     proTableModel->setData(proTableModel->index(row, Project_Company_Id),
         comTableModel->record(selIndexList[0].row()).value(Company_Id));
     proTableModel->setData(proTableModel->index(row, Project_Start_Date),
@@ -466,10 +498,22 @@ void MainWindow::on_proAddButton_clicked()
     ui->proTableView->edit(index);
 }
 
+void MainWindow::on_proDownButton_clicked()
+{
+    int row = Common::moveRecord(proTableModel, proItemSelModel, true);
+    ui->proTableView->setCurrentIndex(proTableModel->index(row, Project_Name));
+}
+
+void MainWindow::on_proUpButton_clicked()
+{
+    int row = Common::moveRecord(proTableModel, proItemSelModel, false);
+    ui->proTableView->setCurrentIndex(proTableModel->index(row, Project_Name));
+}
+
 void MainWindow::on_empDelButton_clicked()
 {
     int result = QMessageBox::warning(this, "删除人员",
-        QString("确定删除人员: \n%1\n\n 吗？")
+        QString("是否删除人员: \n\"%1\"\n")
             .arg(Common::getFieldNames(empTableModel, empItemSelModel, "empName")),
         QMessageBox::Yes | QMessageBox::No);
     if (result == QMessageBox::No)
@@ -489,6 +533,8 @@ void MainWindow::on_empAddButton_clicked()
     auto selIndexList = proItemSelModel->selectedRows();
     int row = empTableModel->rowCount();
     empTableModel->insertRow(row);
+    empTableModel->setData(empTableModel->index(row, Employee_Sort_Id),
+        empTableModel->index(row, Employee_Id).data());
     empTableModel->setData(empTableModel->index(row, Employee_Project_Id),
         proTableModel->record(selIndexList[0].row()).value(Project_Id));
     empTableModel->setData(empTableModel->index(row, Employee_Role_Id), 1);
@@ -498,6 +544,18 @@ void MainWindow::on_empAddButton_clicked()
     auto index = empTableModel->index(row, Employee_Role_Id);
     ui->empTableView->setCurrentIndex(index);
     ui->empTableView->edit(index);
+}
+
+void MainWindow::on_empDownButton_clicked()
+{
+    int row = Common::moveRecord(empTableModel, empItemSelModel, true);
+    ui->empTableView->setCurrentIndex(empTableModel->index(row, Employee_Name));
+}
+
+void MainWindow::on_empUpButton_clicked()
+{
+    int row = Common::moveRecord(empTableModel, empItemSelModel, false);
+    ui->empTableView->setCurrentIndex(empTableModel->index(row, Employee_Name));
 }
 
 void MainWindow::on_proLineEdit_textChanged(const QString& arg1)

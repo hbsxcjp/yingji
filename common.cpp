@@ -44,3 +44,22 @@ QString Common::getFieldNames(const QSqlTableModel* tableModel,
     }
     return names;
 }
+
+int Common::moveRecord(QSqlTableModel* tableModel, QItemSelectionModel* itemSelectionModel, bool isDown)
+{
+    auto indexList = itemSelectionModel->selectedRows();
+    if (indexList.count() == 0)
+        return 0;
+
+    int row0 = indexList.at(0).row(),
+        row1 = row0 + (isDown ? 1 : -1);
+    QSqlRecord record0 = tableModel->record(row0),
+               record1 = tableModel->record(row1);
+    auto sort_id0 = record0.value(Company_Sort_Id),
+         sort_id1 = record1.value(Company_Sort_Id);
+    tableModel->setData(tableModel->index(row0, Company_Sort_Id), sort_id1);
+    tableModel->setData(tableModel->index(row1, Company_Sort_Id), sort_id0);
+
+    tableModel->select();
+    return row1;
+}

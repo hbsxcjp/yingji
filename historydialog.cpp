@@ -29,6 +29,7 @@ void HistoryDialog::createModels()
     ui->comTableView->setModel(comTableModel);
     ui->comTableView->setSelectionModel(comItemSelModel);
     ui->comTableView->hideColumn(Company_Id);
+    ui->comTableView->hideColumn(Company_Sort_Id);
     connect(comItemSelModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
         this, SLOT(setButtonEnabled()));
 
@@ -47,6 +48,7 @@ void HistoryDialog::createModels()
     ui->proTableView->setSelectionModel(proItemSelModel);
     ui->proTableView->setItemDelegate(new QSqlRelationalDelegate(ui->proTableView));
     ui->proTableView->hideColumn(Project_Id);
+    ui->proTableView->hideColumn(Project_Sort_Id);
     ui->proTableView->hideColumn(Project_AtWork);
     connect(proItemSelModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
         this, SLOT(setButtonEnabled()));
@@ -68,6 +70,7 @@ void HistoryDialog::createModels()
     ui->empTableView->setSelectionModel(empItemSelModel);
     ui->empTableView->setItemDelegate(new QSqlRelationalDelegate(ui->empTableView));
     ui->empTableView->hideColumn(Employee_Id);
+    ui->empTableView->hideColumn(Employee_Sort_Id);
     connect(empItemSelModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
         this, SLOT(setButtonEnabled()));
 }
@@ -99,7 +102,7 @@ void HistoryDialog::updateEmployeeModel()
 void HistoryDialog::delCompany()
 {
     int result = QMessageBox::warning(this, "删除历史信息",
-        QString("是否删除公司:\n%1\n\n")
+        QString("是否删除公司:\n\"%1\"\n")
             .arg(Common::getFieldNames(comTableModel, comItemSelModel, "comName")),
         QMessageBox::Yes | QMessageBox::No);
     if (result == QMessageBox::No)
@@ -149,7 +152,7 @@ void HistoryDialog::delCompany()
 void HistoryDialog::restoreCompany()
 {
     int result = QMessageBox::warning(this, "恢复历史信息",
-        QString("是否恢复公司:\n%1\n\n")
+        QString("是否恢复公司:\n\"%1\"\n")
             .arg(Common::getFieldNames(comTableModel, comItemSelModel, "comName")),
         QMessageBox::Yes | QMessageBox::No);
     if (result == QMessageBox::No)
@@ -168,7 +171,7 @@ void HistoryDialog::restoreCompany()
 void HistoryDialog::delProject()
 {
     int result = QMessageBox::warning(this, "删除历史信息",
-        QString("是否删除项目部/机关:\n%1\n\n")
+        QString("是否删除项目部/机关:\n\"%1\"\n")
             .arg(Common::getFieldNames(proTableModel, proItemSelModel, "proName")),
         QMessageBox::Yes | QMessageBox::No);
     if (result == QMessageBox::No)
@@ -210,7 +213,7 @@ void HistoryDialog::delProject()
 void HistoryDialog::restoreProject()
 {
     int result = QMessageBox::warning(this, "恢复历史信息",
-        QString("是否恢复项目部/机关:\n%1\n\n")
+        QString("是否恢复项目部/机关:\n\"%1\"\n")
             .arg(Common::getFieldNames(proTableModel, proItemSelModel, "proName")),
         QMessageBox::Yes | QMessageBox::No);
     if (result == QMessageBox::No)
@@ -229,7 +232,7 @@ void HistoryDialog::restoreProject()
 void HistoryDialog::delEmployee()
 {
     int result = QMessageBox::warning(this, "删除历史信息",
-        QString("是否删除人员:\n%1\n\n")
+        QString("是否删除人员:\n\"%1\"\n")
             .arg(Common::getFieldNames(empTableModel, empItemSelModel, "empName")),
         QMessageBox::Yes | QMessageBox::No);
     if (result == QMessageBox::No)
@@ -248,7 +251,7 @@ void HistoryDialog::delEmployee()
 void HistoryDialog::restoreEmployee()
 {
     int result = QMessageBox::warning(this, "恢复历史信息",
-        QString("是否恢复人员:\n%1\n\n")
+        QString("是否恢复人员:\n\"%1\"\n")
             .arg(Common::getFieldNames(empTableModel, empItemSelModel, "empName")),
         QMessageBox::Yes | QMessageBox::No);
     if (result == QMessageBox::No)
@@ -259,8 +262,8 @@ void HistoryDialog::restoreEmployee()
     QSqlDatabase::database().transaction(); // 启动事务
     // 恢复人员历史记录
     query.exec(QString("INSERT INTO employee "
-                       "(project_id, role_id, empName, depart_position, telephone, start_date) "
-                       "SELECT project_id, role_id, empName, depart_position, telephone, start_date "
+                       "(sort_id, project_id, role_id, empName, depart_position, telephone, start_date) "
+                       "SELECT sort_id, project_id, role_id, empName, depart_position, telephone, start_date "
                        "FROM employee_history WHERE id %1;")
                    .arg(filter));
     query.exec(QString("DELETE FROM employee_history "

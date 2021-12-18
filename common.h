@@ -27,6 +27,7 @@
 
 enum {
     Company_Id,
+    Company_Sort_Id,
     Company_Name,
     Company_Start_Date,
     Company_End_Date
@@ -34,6 +35,7 @@ enum {
 
 enum {
     Project_Id,
+    Project_Sort_Id,
     Project_Company_Id,
     Project_Name,
     Project_Start_Date,
@@ -43,6 +45,7 @@ enum {
 
 enum {
     Employee_Id,
+    Employee_Sort_Id,
     Employee_Project_Id,
     Employee_Role_Id,
     Employee_Name,
@@ -62,6 +65,8 @@ QString& toLineString(QString& str);
 
 QString getFieldNames(const QSqlTableModel* tableModel,
     const QItemSelectionModel* itemSelectionModel, const QString& field);
+
+int moveRecord(QSqlTableModel* tableModel, QItemSelectionModel* itemSelectionModel, bool isDown);
 
 }
 

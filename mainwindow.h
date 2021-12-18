@@ -24,10 +24,18 @@ private slots:
 
     void on_comDelButton_clicked();
     void on_comAddButton_clicked();
+    void on_comDownButton_clicked();
+    void on_comUpButton_clicked();
+
     void on_proDelButton_clicked();
     void on_proAddButton_clicked();
+    void on_proDownButton_clicked();
+    void on_proUpButton_clicked();
+
     void on_empDelButton_clicked();
     void on_empAddButton_clicked();
+    void on_empDownButton_clicked();
+    void on_empUpButton_clicked();
 
     void on_proLineEdit_textChanged(const QString& arg1);
     void on_empLineEdit_textChanged(const QString& arg1);
